@@ -1,0 +1,10 @@
+version: '3.2'
+
+services:
+  app.web:
+    build:
+      context: .
+      args:
+        env: prod
+    ports:
+      - "80:80"

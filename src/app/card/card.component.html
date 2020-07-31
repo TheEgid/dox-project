@@ -1,0 +1,44 @@
+
+<div class="card">
+
+  <h2> {{ index + 1 }}  {{ card.title }} </h2>
+  <p> {{card.text}} </p>
+
+  <h6 [ngStyle]="{
+  color: card.title.length < 7 ? 'blue' : 'red'
+  }"></h6>
+
+    <strong>Number: {{ getInfo() }} </strong>
+    <br>
+    <strong>{{ cardDate | date:'dd MMMM yyyy HH:mm' }} </strong>
+
+  <!--  <p class="text" [ngClass]="{ blue: textColor === 'blue',-->
+  <!--                          red: textColor === 'red',-->
+  <!--                          green: textColor === 'green'-->
+  <!--  }-->
+
+  <p class="text"
+     [class.blue]="textColor === 'blue'"
+     [class.red]="textColor === 'red'"
+     [class.green]="textColor === 'green'">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  </p>
+
+  <div class="buttons">
+    <button (click)="textColor='blue'"> set blue</button>
+    <button (click)="textColor='green'"> set green</button>
+    <button (click)="textColor='red'"> set red</button>
+    <br>
+    <button (click)="changeTitle()">Change title</button>
+  </div>
+
+  <br>
+  <label>Введите имя:</label>
+  <label>
+    <!--    <input type="text" #my_imput (input)="inputHandler(my_imput.value)" [value]="title">-->
+    <input type="text" [(ngModel)]="card.title" placeholder="title">
+  </label>
+
+</div>
+
+
