@@ -1,0 +1,12 @@
+*.js
+
+/ .eslintignore
+build/*
+public/*
+src/swagger/*
+
+/test/*
+
+node_modules
+dist
+coverage
