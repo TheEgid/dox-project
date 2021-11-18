@@ -1,11 +1,10 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import * as morgan from "morgan";
+
 import { ConfigModule } from "@nestjs/config";
 
-ConfigModule.forRoot({
-  envFilePath: ".env",
-});
+ConfigModule.forRoot({ envFilePath: ".env" });
 
 const port = process.env.SERVER_PORT as unknown as number;
 
