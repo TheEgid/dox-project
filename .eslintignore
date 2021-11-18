@@ -10,3 +10,4 @@ src/swagger/*
 node_modules
 dist
 coverage
+UPLOAD
