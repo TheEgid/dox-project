@@ -1,10 +1,12 @@
 import { Logger, MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
+import { connectionOptions, configConnection } from "./database/database.config";
 import { AppController } from "./app.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppService } from "./app.service";
 import { AppLoggerMiddleware, HealthcheckMiddleware } from "./app.middleware";
 import { ConfigModule } from "@nestjs/config";
-import { connectionOptions, configConnection } from "./database/database.config";
+import { TokenModule } from "./token/token.module";
+import { UserModule } from "./user/user.module";
 
 const appConfigModule = ConfigModule.forRoot({
   envFilePath: [".env"],
@@ -23,7 +25,7 @@ const ormModule = TypeOrmModule.forRootAsync({
 });
 
 @Module({
-  imports: [appConfigModule, ormModule],
+  imports: [appConfigModule, ormModule, UserModule, TokenModule],
   controllers: [AppController],
   providers: [AppService],
 })

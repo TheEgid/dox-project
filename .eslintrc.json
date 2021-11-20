@@ -31,7 +31,18 @@
     "no-console": 0,
     "class-methods-use-this": 0,
     "object-curly-newline": 0,
-    "prettier/prettier": ["warn", {"printWidth": 100, "tabWidth": 2, "bracketSpacing": true, "bracketSameLine": true,
-      "semi": true, "singleQuote": false, "trailingComma": "es5"} ]
+    "prettier/prettier":
+    [
+      "warn",
+      {
+        "printWidth": 100,
+        "tabWidth": 2,
+        "bracketSpacing": true,
+        "bracketSameLine": true,
+        "semi": true,
+        "singleQuote": false,
+        "trailingComma": "es5"
+      }
+    ]
   }
 }
