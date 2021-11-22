@@ -1,5 +1,5 @@
 import { getConnection, getCustomRepository } from "typeorm";
-// import { Request } from "express";
+import { Request } from "express";
 import UsersRepository from "./user.repository";
 import { IPingResult, ping } from "@network-utils/tcp-ping";
 import User from "./user.entity";
@@ -24,32 +24,32 @@ export default class UserService {
     }
   }
 
-  // // Вход
-  // async userSignin(user: User): Promise<Token> {
-  //   const usersRepository = getConnection(process.env.DB_NAME).getCustomRepository(UsersRepository);
-  //   const oldUser = await usersRepository.findByEmailHashedPassword(
-  //     user.email,
-  //     user.hashedPassword
-  //   );
-  //   if (oldUser instanceof User) {
-  //     await TokenService.setToken(oldUser);
-  //     return await TokenService.getTokenByUser(oldUser);
-  //   } else {
-  //     return undefined;
-  //   }
-  // }
-  //
-  // async getUserInfo(req: Request): Promise<User> {
-  //   return await this.findUser(req);
-  // }
-  //
-  // protected async findUser(req: Request): Promise<User> {
-  //   if (req.get(process.env.HEADER_AUTH)) {
-  //     const [, token] = req.headers.authorization.split(" ", 2);
-  //     return await TokenService.getUserByToken(token);
-  //   }
-  // }
-  //
+  // Вход
+  async userSignin(user: User): Promise<Token> {
+    const usersRepository = getConnection(process.env.DB_NAME).getCustomRepository(UsersRepository);
+    const oldUser = await usersRepository.findByEmailHashedPassword(
+      user.email,
+      user.hashedPassword
+    );
+    if (oldUser instanceof User) {
+      await TokenService.setToken(oldUser);
+      return await TokenService.getTokenByUser(oldUser);
+    } else {
+      return undefined;
+    }
+  }
+
+  async getUserInfo(req: Request): Promise<User> {
+    return await this.findUser(req);
+  }
+
+  protected async findUser(req: Request): Promise<User> {
+    if (req.get(process.env.HEADER_AUTH)) {
+      const [, token] = req.headers.authorization.split(" ", 2);
+      return await TokenService.getUserByToken(token);
+    }
+  }
+
   async getLatency(): Promise<IPingResult> {
     function update(progress: number, total: number): void {
       console.log(progress, "/", total);

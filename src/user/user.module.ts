@@ -2,10 +2,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import User from "./user.entity";
 import UserController from "./user.controller";
-// import { PassportModule } from '@nestjs/passport';
 import UserService from "./user.service";
-import * as argon2 from "argon2";
-
 
 @Module({
   imports: [

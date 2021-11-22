@@ -1,13 +1,18 @@
-import { Body, Get, Post, Req, Param, Delete, Controller } from "@nestjs/common";
+import {
+  Body,
+  Get,
+  Post,
+  Req,
+  Param,
+  Delete,
+  Controller,
+  HttpException,
+  HttpStatus,
+} from "@nestjs/common";
 import UserService from "./user.service";
-// import { Request } from "express";
-// import { StatusCodes } from "http-status-codes";
-// import { IPingResult } from "@network-utils/tcp-ping";
-
 import { IPingResult } from "@network-utils/tcp-ping";
 import User from "./user.entity";
 import Token from "../token/token.entity";
-// import ControllerError from "./ControllerError";
 
 @Controller()
 export default class UserController {
@@ -21,23 +26,36 @@ export default class UserController {
   @Post("/api/signup")
   async registrateUser(@Body() user: User): Promise<Token> {
     const newtoken = await this.userService.userSignup(user);
-    console.log(newtoken);
     if (newtoken instanceof Token) {
       return newtoken;
     } else {
-      throw new Error(); //ControllerError(StatusCodes.NOT_ACCEPTABLE, `Already logged as ${user.email}`);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.NOT_ACCEPTABLE,
+          message: `Already logged as ${user.email}`,
+          error: "NOT_ACCEPTABLE",
+        },
+        HttpStatus.NOT_ACCEPTABLE
+      );
     }
   }
 
-  // @Post("/signin")
-  // async login(@Body() user: User): Promise<Token> {
-  //   const oldtoken = await this.userService.userSignin(user);
-  //   if (oldtoken instanceof Token) {
-  //     return oldtoken;
-  // } else {
-  //   throw new ControllerError(StatusCodes.NOT_FOUND, "Wrong Password or Username");
-  // }
-  // }
+  @Post("/api/signin")
+  async login(@Body() user: User): Promise<Token> {
+    const oldtoken = await this.userService.userSignin(user);
+    if (oldtoken instanceof Token) {
+      return oldtoken;
+    } else {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: "Wrong Password or Username",
+          error: "UNAUTHORIZED",
+        },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+  }
 
   // // Возвращает авторизированного пользователя
   // @Authorized()
@@ -98,17 +116,6 @@ export default class UserController {
 //   console.log(JSON.stringify(info));
 //   console.log(`tracedId = ${httpContext.get("traceId") as string}`);
 // }
-// }
-
-// @Get("/")
-// // Протестировано добавление заголовков
-// @Header("Access-Control-Allow-Origin", "*")
-// @Header(
-//   "Access-Control-Allow-Headers",
-//   "Origin, X-Requested-With, Content-Type, Accept, X-Access-Token"
-// )
-// getStart() {
-//   return { message: "Server is running" };
 // }
 
 /**

@@ -5,8 +5,8 @@ import { Logger } from "@nestjs/common";
 const port = process.env.SERVER_PORT as unknown as number;
 
 async function bootstrap(): Promise<void> {
-  process.env.NO_COLOR = String(true);
   const app = await NestFactory.create(AppModule);
+  // app.useGlobalFilters(new ExceptionFilter());
   await app.listen(port);
 }
 
@@ -17,3 +17,14 @@ bootstrap()
   .catch((error) => {
     Logger.error("[Error] ➤ ".concat(error as string));
   });
+
+// @Get("/")
+// // Протестировано добавление заголовков
+// @Header("Access-Control-Allow-Origin", "*")
+// @Header(
+//   "Access-Control-Allow-Headers",
+//   "Origin, X-Requested-With, Content-Type, Accept, X-Access-Token"
+// )
+// getStart() {
+//   return { message: "Server is running" };
+// }
