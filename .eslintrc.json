@@ -6,6 +6,7 @@
   },
   "root": true,
   "extends": [
+    "standard",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
@@ -23,6 +24,7 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "no-useless-constructor": "off",
     "semi": 0,
     "space-before-function-paren": 0,
     "arrow-parens": 0, // Несовместимо с prettier
