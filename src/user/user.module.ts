@@ -1,16 +1,25 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import User from "./user.entity";
 import UserController from "./user.controller";
 import UserService from "./user.service";
+import { AuthMiddleware } from "../auth/auth.middleware";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    // PassportModule.register({ defaultStrategy: 'jwt' }),
-  ],
+  imports: [TypeOrmModule.forFeature([User])],
   exports: [UserService],
   controllers: [UserController],
   providers: [UserService],
 })
-export class UserModule {}
+export class UserModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(
+        { path: '"/api/latency"', method: RequestMethod.GET },
+        { path: "/api/info", method: RequestMethod.GET }
+      );
+  }
+}
+
+//.forRoutes(OrderController);

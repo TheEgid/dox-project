@@ -1,16 +1,7 @@
-import {
-  Body,
-  Get,
-  Post,
-  Req,
-  Param,
-  Delete,
-  Controller,
-  HttpException,
-  HttpStatus,
-} from "@nestjs/common";
-import UserService from "./user.service";
+import { Body, Get, Post, Req, Controller, HttpException, HttpStatus } from "@nestjs/common";
 import { IPingResult } from "@network-utils/tcp-ping";
+import { Request } from "express";
+import UserService from "./user.service";
 import User from "./user.entity";
 import Token from "../token/token.entity";
 
@@ -58,29 +49,23 @@ export default class UserController {
   }
 
   // // Возвращает авторизированного пользователя
-  // @Authorized()
-  // @OnUndefined(StatusCodes.BAD_REQUEST)
-  // @Get("/info")
-  // async getId(@Req() req: Request): Promise<User> {
-  //   return await this.userService.getUserInfo(req);
-  // }
+  @Get("api/info")
+  async getId(@Req() req: Request): Promise<User> {
+    return await this.userService.getUserInfo(req);
+  }
 
   // // Время задержки сервера
-  // @Authorized()
-  // @OnUndefined(StatusCodes.BAD_REQUEST)
   @Get("/api/latency")
   async getPing(): Promise<IPingResult> {
     return await this.userService.getLatency();
   }
 }
 
-//
-// @Authorized()
 // @Get("/logout")
 // async logout(@Req() req: Request): Promise<void> {
 //   return await this.userService.userLogout(req);
 // }
-//
+
 // // ????
 // @Delete("/delete-last-user/:key")
 // @OnUndefined(StatusCodes.OK)
