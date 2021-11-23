@@ -2,11 +2,10 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { Logger } from "@nestjs/common";
 
-const port = process.env.SERVER_PORT as unknown as number;
+const port = Number(process.env.SERVER_PORT);
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-  // app.useGlobalFilters(new ExceptionFilter());
   await app.listen(port);
 }
 

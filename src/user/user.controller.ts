@@ -8,7 +8,6 @@ import {
   HttpStatus,
   Injectable,
 } from "@nestjs/common";
-import { IPingResult } from "@network-utils/tcp-ping";
 import { Request } from "express";
 import UserService from "./user.service";
 import User from "./user.entity";
@@ -54,16 +53,9 @@ export default class UserController {
     }
   }
 
-  // // Возвращает авторизированного пользователя
-  @Get("api/info")
+  @Get("/api/info")
   async getId(@Req() req: Request): Promise<User> {
     return await this.userService.getUserInfo(req);
-  }
-
-  // // Время задержки сервера
-  @Get("/api/latency")
-  async getPing(): Promise<IPingResult> {
-    return await this.userService.getLatency();
   }
 
   @Get("/api/logout")

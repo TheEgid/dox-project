@@ -4,7 +4,7 @@ import TokenService from "../token/token.service";
 import User from "../user/user.entity";
 
 @Injectable()
-export default class AuthMiddleware implements NestMiddleware {
+export class AdminMiddleware implements NestMiddleware {
   constructor(private readonly tokenService: TokenService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -13,16 +13,16 @@ export default class AuthMiddleware implements NestMiddleware {
       const header = authorizationHeader.split(" ", 2);
       const [, token] = header;
       const curUser = await this.tokenService.getUserByToken(token);
-      if (curUser instanceof User) {
+      if (curUser instanceof User && curUser.isAdmin === true) {
         next();
       } else {
         throw new HttpException(
           {
-            statusCode: HttpStatus.UNAUTHORIZED,
-            message: "Wrong headers.authorization",
-            error: "UNAUTHORIZED",
+            statusCode: HttpStatus.FORBIDDEN,
+            message: "Only admin authorization",
+            error: "FORBIDDEN",
           },
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.FORBIDDEN
         );
       }
     } else {
