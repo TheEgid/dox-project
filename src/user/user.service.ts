@@ -1,12 +1,17 @@
 import { getConnection, getCustomRepository } from "typeorm";
+import { Injectable, Logger } from "@nestjs/common";
 import { Request } from "express";
 import UsersRepository from "./user.repository";
 import { IPingResult, ping } from "@network-utils/tcp-ping";
 import User from "./user.entity";
 import Token from "../token/token.entity";
 import TokenService from "../token/token.service";
+import TokenRepository from "../token/token.repository";
 
+@Injectable()
 export default class UserService {
+  constructor(private readonly tokenService: TokenService) {}
+
   static async getUsers(): Promise<User[]> {
     return await getCustomRepository(UsersRepository).findAll();
   }
@@ -17,8 +22,8 @@ export default class UserService {
     const userRepeat = await usersRepository.findByEmail(newUser.email);
     if (!(userRepeat instanceof User)) {
       await usersRepository.save(newUser);
-      await TokenService.setToken(newUser);
-      return await TokenService.getTokenByUser(newUser);
+      await this.tokenService.setToken(newUser);
+      return await this.tokenService.getTokenByUser(newUser);
     } else {
       return undefined;
     }
@@ -32,8 +37,8 @@ export default class UserService {
       user.hashedPassword
     );
     if (oldUser instanceof User) {
-      await TokenService.setToken(oldUser);
-      return await TokenService.getTokenByUser(oldUser);
+      await this.tokenService.setToken(oldUser);
+      return await this.tokenService.getTokenByUser(oldUser);
     } else {
       return undefined;
     }
@@ -46,13 +51,13 @@ export default class UserService {
   protected async findUser(req: Request): Promise<User> {
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
-      return await TokenService.getUserByToken(token);
+      return await this.tokenService.getUserByToken(token);
     }
   }
 
   async getLatency(): Promise<IPingResult> {
     function update(progress: number, total: number): void {
-      console.log(progress, "/", total);
+      Logger.log(`[Ping] ${progress}/${total}`);
     }
     return await ping(
       {
@@ -62,20 +67,19 @@ export default class UserService {
         timeout: Number(process.env.PING_TIMEOUT),
       },
       update
-    ).then((result) => {
-      console.log("ping result:", result);
-      return result;
-    });
+    ).then((result) => result);
   }
 
-  // async userLogout(req: Request): Promise<void> {
-  //   const TokenRepo = getConnection(process.env.DB_NAME).getCustomRepository(TokenRepository);
-  //   if (req.get(process.env.HEADER_AUTH)) {
-  //     const [, token] = req.headers.authorization.split(" ", 2);
-  //     await TokenRepo.remove(token);
-  //   }
-  // }
-  //
+  async userLogout(req: Request): Promise<void> {
+    const TokenRepo = getConnection(process.env.DB_NAME).getCustomRepository(TokenRepository);
+    if (req.get(process.env.HEADER_AUTH)) {
+      const [, token] = req.headers.authorization.split(" ", 2);
+      await TokenRepo.remove(token);
+    } else {
+      return undefined;
+    }
+  }
+
   // async deleteLastUser(): Promise<void> {
   //   const UserRepo = getConnection(process.env.DB_NAME).getCustomRepository(UsersRepository);
   //   await UserRepo.removeLast();

@@ -1,17 +1,23 @@
-import { Body, Get, Post, Req, Controller, HttpException, HttpStatus } from "@nestjs/common";
+import {
+  Body,
+  Get,
+  Post,
+  Req,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from "@nestjs/common";
 import { IPingResult } from "@network-utils/tcp-ping";
 import { Request } from "express";
 import UserService from "./user.service";
 import User from "./user.entity";
 import Token from "../token/token.entity";
 
+@Injectable()
 @Controller()
 export default class UserController {
-  userService: UserService;
-
-  constructor() {
-    this.userService = new UserService();
-  }
+  constructor(private readonly userService: UserService) {}
 
   // Регистрация пользователя
   @Post("/api/signup")
@@ -59,12 +65,12 @@ export default class UserController {
   async getPing(): Promise<IPingResult> {
     return await this.userService.getLatency();
   }
-}
 
-// @Get("/logout")
-// async logout(@Req() req: Request): Promise<void> {
-//   return await this.userService.userLogout(req);
-// }
+  @Get("/api/logout")
+  async logout(@Req() req: Request): Promise<void> {
+    await this.userService.userLogout(req);
+  }
+}
 
 // // ????
 // @Delete("/delete-last-user/:key")

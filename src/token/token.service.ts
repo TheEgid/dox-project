@@ -4,7 +4,7 @@ import Token from "./token.entity";
 import TokenRepository from "./token.repository";
 
 export default class TokenService {
-  static async getUserByToken(refreshToken: string): Promise<User> {
+  async getUserByToken(refreshToken: string): Promise<User> {
     return await getConnection(process.env.DB_NAME)
       .getRepository(User)
       .createQueryBuilder("user")
@@ -13,7 +13,7 @@ export default class TokenService {
       .getOne();
   }
 
-  static async getTokenByUser(user: User): Promise<Token> {
+  async getTokenByUser(user: User): Promise<Token> {
     return await getConnection(process.env.DB_NAME)
       .getRepository(Token)
       .createQueryBuilder("token")
@@ -23,7 +23,7 @@ export default class TokenService {
       .getOne();
   }
 
-  static async setToken(user: User): Promise<void> {
+  async setToken(user: User): Promise<void> {
     const oldToken = await this.getTokenByUser(user);
     if (!(oldToken instanceof Token && Date.now() - Date.parse(oldToken.expiresIn) < 0)) {
       const token: TokenRepository = new TokenRepository();
