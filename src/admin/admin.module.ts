@@ -6,6 +6,7 @@ import { MiddlewareConsumer } from "@nestjs/common";
 import AdminController from "./admin.controller";
 import AuthMiddleware from "../auth/auth.middleware";
 import AdminService from "./admin.service";
+// import DataBaseModule from "../database/database.module";
 
 @Module({
   imports: [UserModule, TokenModule],

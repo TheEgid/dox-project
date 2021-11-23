@@ -4,8 +4,10 @@ import Token from "./token.entity";
 import TokenRepository from "./token.repository";
 
 export default class TokenService {
+  private readonly DbConnection = () => getConnection(process.env.DB_NAME);
+
   async getUserByToken(refreshToken: string): Promise<User> {
-    return await getConnection(process.env.DB_NAME)
+    return await this.DbConnection()
       .getRepository(User)
       .createQueryBuilder("user")
       .leftJoinAndSelect("token", "token", "token.userId = user.id")
@@ -14,7 +16,7 @@ export default class TokenService {
   }
 
   async getTokenByUser(user: User): Promise<Token> {
-    return await getConnection(process.env.DB_NAME)
+    return await this.DbConnection()
       .getRepository(Token)
       .createQueryBuilder("token")
       .leftJoinAndSelect("user", "user", "token.userId = user.id")

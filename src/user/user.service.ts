@@ -10,14 +10,11 @@ import TokenRepository from "../token/token.repository";
 @Injectable()
 export default class UserService {
   constructor(private readonly tokenService: TokenService) {}
-
-  // static async getUsers(): Promise<User[]> {
-  //   return await getCustomRepository(UsersRepository).findAll();
-  // }
+  private readonly DbConnection = () => getConnection(process.env.DB_NAME);
 
   // Регистрация
   async userSignup(newUser: User): Promise<Token> {
-    const userRepo = getConnection(process.env.DB_NAME).getCustomRepository(UsersRepository);
+    const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
     const userRepeat = await userRepo.findByEmail(newUser.email);
     if (!(userRepeat instanceof User)) {
       await userRepo.save(newUser);
@@ -30,7 +27,7 @@ export default class UserService {
 
   // Вход
   async userSignin(user: User): Promise<Token> {
-    const userRepo = getConnection(process.env.DB_NAME).getCustomRepository(UsersRepository);
+    const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
     const oldUser = await userRepo.findByEmailHashedPassword(user.email, user.hashedPassword);
     if (oldUser instanceof User) {
       await this.tokenService.setToken(oldUser);
@@ -41,7 +38,7 @@ export default class UserService {
   }
 
   async userLogout(req: Request): Promise<void> {
-    const TokenRepo = getConnection(process.env.DB_NAME).getCustomRepository(TokenRepository);
+    const TokenRepo = this.DbConnection().getCustomRepository(TokenRepository);
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
       await TokenRepo.remove(token);
@@ -56,17 +53,12 @@ export default class UserService {
       return await this.tokenService.getUserByToken(token);
     }
   }
+
   // async deleteLastUser(): Promise<void> {
-  //   const UserRepo = getConnection(process.env.DB_NAME).getCustomRepository(UsersRepository);
+  //   const UserRepo = this.DbConnection().getCustomRepository(UsersRepository);
   //   await UserRepo.removeLast();
   // }
 }
-
-// const usersRepository = getConnection(process.env.DB_NAME).getCustomRepository(UsersRepository);
-// if (req.get(process.env.HEADER_AUTH)) {
-// const [, token] = req.headers.authorization.split(" ", 2);
-// const curUser = await usersRepository.findByToken(token);
-// await usersRepository.remove(curUser);
 
 // const repository = getMongoRepository(User);
 // // Поиск по текущему токену
