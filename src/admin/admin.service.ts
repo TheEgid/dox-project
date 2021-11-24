@@ -23,8 +23,13 @@ export default class AdminService {
     ).then((result) => result);
   }
 
-  async getUsers(): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
     return userRepo.findAll();
+  }
+
+  async findOne(id: string) {
+    const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
+    return userRepo.findOne(id);
   }
 }

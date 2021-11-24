@@ -26,6 +26,10 @@ class UsersRepository implements IUsersRepository {
     });
   }
 
+  public async findOne(id: string): Promise<User | undefined> {
+    return this.ormRepository.findOne({ where: { id }, withDeleted: false });
+  }
+
   public async findAll(): Promise<User[]> {
     return this.ormRepository.find();
   }

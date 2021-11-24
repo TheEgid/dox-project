@@ -1,4 +1,4 @@
-import { Controller, Get, Injectable } from "@nestjs/common";
+import { Controller, Get, Injectable, Param } from "@nestjs/common";
 import { IPingResult } from "@network-utils/tcp-ping";
 import AdminService from "./admin.service";
 import User from "../user/user.entity";
@@ -15,7 +15,12 @@ export default class AdminController {
   }
 
   @Get("/api/users")
-  async getUsers(): Promise<User[]> {
-    return this.adminService.getUsers();
+  async findAll(): Promise<User[]> {
+    return this.adminService.findAll();
+  }
+
+  @Get("/api/user/:id")
+  async findOne(@Param("id") id: string) {
+    return this.adminService.findOne(id);
   }
 }
