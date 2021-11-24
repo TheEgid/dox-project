@@ -1,6 +1,7 @@
 import { ConnectionOptions } from "typeorm";
 import User from "../user/user.entity";
 import Token from "../token/token.entity";
+import Document from "../document/document.entity";
 
 const configConnection = () => {
   switch (process.env.APP_ENV) {
@@ -29,7 +30,7 @@ const configConnection = () => {
 };
 
 const connectionOptions: ConnectionOptions = {
-  entities: [User, Token],
+  entities: [User, Token, Document],
   synchronize: true,
   type: "postgres",
   logging: true,

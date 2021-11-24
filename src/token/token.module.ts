@@ -4,12 +4,8 @@ import Token from "./token.entity";
 import TokenService from "./token.service";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Token]),
-    // PassportModule.register({ defaultStrategy: 'jwt' }),
-  ],
+  imports: [TypeOrmModule.forFeature([Token])],
   exports: [TokenService],
-  // controllers: [UserController],
   providers: [TokenService],
 })
 export default class TokenModule {}
