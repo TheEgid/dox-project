@@ -13,6 +13,8 @@ export default class AuthMiddleware implements NestMiddleware {
       const header = authorizationHeader.split(" ", 2);
       const [, token] = header;
       const curUser = await this.tokenService.getUserByToken(token);
+
+      //проверить срок действия
       if (curUser instanceof User) {
         next();
       } else {

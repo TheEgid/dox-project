@@ -1,24 +1,30 @@
-import { getConnection } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { Request } from "express";
-import UsersRepository from "./user.repository";
 import User from "./user.entity";
 import Token from "../token/token.entity";
 import TokenService from "../token/token.service";
-import TokenRepository from "../token/token.repository";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import * as argon2 from "argon2";
 
 @Injectable()
 export default class UserService {
-  constructor(private readonly tokenService: TokenService) {}
-
-  private readonly DbConnection = () => getConnection(process.env.DB_NAME);
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Token)
+    private tokenRepository: Repository<Token>,
+    private readonly tokenService: TokenService
+  ) {}
 
   // Регистрация
   async userSignup(newUser: User): Promise<Token> {
-    const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
-    const userRepeat = await userRepo.findByEmail(newUser.email);
+    const userRepeat = await this.userRepository.findOne({
+      where: { email: newUser.email },
+    });
     if (!(userRepeat instanceof User)) {
-      await userRepo.save(newUser);
+      newUser.hashedPassword = await argon2.hash(newUser.hashedPassword);
+      await this.userRepository.save(newUser);
       await this.tokenService.setToken(newUser);
       return this.tokenService.getTokenByUser(newUser);
     }
@@ -27,24 +33,33 @@ export default class UserService {
 
   // Вход
   async userSignin(user: User): Promise<Token> {
-    const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
-    const oldUser = await userRepo.findByEmailHashedPassword(user.email, user.hashedPassword);
-    if (oldUser instanceof User) {
-      await this.tokenService.setToken(oldUser);
-      return this.tokenService.getTokenByUser(oldUser);
+    const oldUser = await this.userRepository.findOne({
+      where: { email: user.email },
+    });
+    if (!(oldUser instanceof User)) {
+      return undefined;
     }
-    return undefined;
+    const valid = await argon2.verify(oldUser.hashedPassword, user.hashedPassword);
+    if (valid === false) {
+      return undefined;
+    }
+    await this.tokenService.setToken(oldUser);
+    return this.tokenService.getTokenByUser(oldUser);
   }
 
   async userLogout(req: Request): Promise<void> {
-    const TokenRepo = this.DbConnection().getCustomRepository(TokenRepository);
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
-      await TokenRepo.remove(token);
+      const removedToken = await this.tokenRepository.findOne({
+        where: { refreshToken: token },
+      });
+      if (!(removedToken instanceof Token)) {
+        return undefined;
+      }
+      await this.tokenRepository.remove([removedToken]);
     } else {
       return undefined;
     }
-    return null;
   }
 
   async getUserInfo(req: Request): Promise<User> {
@@ -54,16 +69,8 @@ export default class UserService {
     }
     return null;
   }
-
-  // async deleteLastUser(): Promise<void> {
-  //   const UserRepo = this.DbConnection().getCustomRepository(UsersRepository);
-  //   await UserRepo.removeLast();
-  // }
 }
 
-// const repository = getMongoRepository(User);
-// // Поиск по текущему токену
-// const user = await this.findUser(req, repository);
 //
 // if (all) {
 //   // Если true удаляем(заменяем пустыми, что тоже так себе. Опять же тупо с Mongo не очень удобно работать, так проще всего было. Так метод Update юзал) все токены

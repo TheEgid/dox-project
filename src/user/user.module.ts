@@ -5,9 +5,10 @@ import UserController from "./user.controller";
 import UserService from "./user.service";
 import TokenService from "../token/token.service";
 import AuthMiddleware from "../auth/auth.middleware";
+import Token from "../token/token.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), TokenService],
+  imports: [TypeOrmModule.forFeature([User, Token]), TokenService],
   exports: [UserService],
   controllers: [UserController],
   providers: [UserService, TokenService],

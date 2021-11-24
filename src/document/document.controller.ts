@@ -1,7 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import CreateDocumentDto from "./dto/document.dto.create";
-import UpdateDocumentDto from "./dto/document.dto.update";
-import DocumentDto from "./dto/document.dto";
+import { DocumentDto, CreateDocumentDto, UpdateDocumentDto } from "./document.dto";
 import DocumentService from "./document.service";
 
 @Controller("api/document")

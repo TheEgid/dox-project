@@ -5,10 +5,12 @@ import AdminMiddleware from "./admin.middleware";
 import AdminController from "./admin.controller";
 import AuthMiddleware from "../auth/auth.middleware";
 import AdminService from "./admin.service";
-// import DataBaseModule from "../database/database.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import User from "../user/user.entity";
+import Token from "../token/token.entity";
 
 @Module({
-  imports: [UserModule, TokenModule],
+  imports: [UserModule, TokenModule, TypeOrmModule.forFeature([User, Token])],
   controllers: [AdminController],
   providers: [AdminService],
 })

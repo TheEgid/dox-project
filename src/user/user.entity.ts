@@ -18,7 +18,7 @@ export default class User {
   email: string;
 
   @Column("text")
-  @MinLength(2)
+  @MinLength(6)
   hashedPassword: string;
 
   @CreateDateColumn()

@@ -1,12 +1,16 @@
 import { IPingResult, ping } from "@network-utils/tcp-ping";
 import { Injectable, Logger } from "@nestjs/common";
-import { getConnection } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import User from "../user/user.entity";
-import UsersRepository from "../user/user.repository";
 
 @Injectable()
 export default class AdminService {
-  private readonly DbConnection = () => getConnection(process.env.DB_NAME);
+  // private readonly DbConnection = () => getConnection(process.env.DB_NAME);
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>
+  ) {}
 
   async getLatency(): Promise<IPingResult> {
     function update(progress: number, total: number): void {
@@ -24,12 +28,11 @@ export default class AdminService {
   }
 
   async findAll(): Promise<User[]> {
-    const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
-    return userRepo.findAll();
+    // const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
+    return this.userRepository.find();
   }
 
   async findOne(id: string) {
-    const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
-    return userRepo.findOne(id);
+    return this.userRepository.findOne(id);
   }
 }

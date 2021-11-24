@@ -6,6 +6,7 @@ import TokenRepository from "./token.repository";
 export default class TokenService {
   private readonly DbConnection = () => getConnection(process.env.DB_NAME);
 
+  //проверить срок действия
   async getUserByToken(refreshToken: string): Promise<User> {
     return this.DbConnection()
       .getRepository(User)
