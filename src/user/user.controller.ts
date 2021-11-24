@@ -14,16 +14,16 @@ import User from "./user.entity";
 import Token from "../token/token.entity";
 
 @Injectable()
-@Controller()
+@Controller("api/auth")
 export default class UserController {
   constructor(private readonly userService: UserService) {}
 
   // Регистрация пользователя
-  @Post("/api/signup")
-  async registrateUser(@Body() user: User): Promise<Token> {
-    const newtoken = await this.userService.userSignup(user);
-    if (newtoken instanceof Token) {
-      return newtoken;
+  @Post("signup")
+  async userSignup(@Body() user: User): Promise<Token> {
+    const newToken = await this.userService.userSignup(user);
+    if (newToken instanceof Token) {
+      return newToken;
     }
     throw new HttpException(
       {
@@ -35,8 +35,8 @@ export default class UserController {
     );
   }
 
-  @Post("/api/signin")
-  async login(@Body() user: User): Promise<Token> {
+  @Post("signin")
+  async userSignin(@Body() user: User): Promise<Token> {
     const oldtoken = await this.userService.userSignin(user);
     if (oldtoken instanceof Token) {
       return oldtoken;
@@ -51,13 +51,13 @@ export default class UserController {
     );
   }
 
-  @Get("/api/info")
-  async getId(@Req() req: Request): Promise<User> {
+  @Get("info")
+  async getUserInfo(@Req() req: Request): Promise<User> {
     return this.userService.getUserInfo(req);
   }
 
-  @Get("/api/logout")
-  async logout(@Req() req: Request): Promise<void> {
+  @Get("logout")
+  async userLogout(@Req() req: Request): Promise<void> {
     await this.userService.userLogout(req);
   }
 }

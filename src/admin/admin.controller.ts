@@ -4,22 +4,22 @@ import AdminService from "./admin.service";
 import User from "../user/user.entity";
 
 @Injectable()
-@Controller()
+@Controller("api/admin")
 export default class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   // // Время задержки сервера
-  @Get("/api/latency")
+  @Get("latency")
   async getPing(): Promise<IPingResult> {
     return this.adminService.getLatency();
   }
 
-  @Get("/api/users")
+  @Get("users")
   async findAll(): Promise<User[]> {
     return this.adminService.findAll();
   }
 
-  @Get("/api/user/:id")
+  @Get("user/:id")
   async findOne(@Param("id") id: string) {
     return this.adminService.findOne(id);
   }
