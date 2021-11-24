@@ -10,6 +10,7 @@ import TokenRepository from "../token/token.repository";
 @Injectable()
 export default class UserService {
   constructor(private readonly tokenService: TokenService) {}
+
   private readonly DbConnection = () => getConnection(process.env.DB_NAME);
 
   // Регистрация
@@ -19,10 +20,9 @@ export default class UserService {
     if (!(userRepeat instanceof User)) {
       await userRepo.save(newUser);
       await this.tokenService.setToken(newUser);
-      return await this.tokenService.getTokenByUser(newUser);
-    } else {
-      return undefined;
+      return this.tokenService.getTokenByUser(newUser);
     }
+    return undefined;
   }
 
   // Вход
@@ -31,10 +31,9 @@ export default class UserService {
     const oldUser = await userRepo.findByEmailHashedPassword(user.email, user.hashedPassword);
     if (oldUser instanceof User) {
       await this.tokenService.setToken(oldUser);
-      return await this.tokenService.getTokenByUser(oldUser);
-    } else {
-      return undefined;
+      return this.tokenService.getTokenByUser(oldUser);
     }
+    return undefined;
   }
 
   async userLogout(req: Request): Promise<void> {
@@ -45,13 +44,15 @@ export default class UserService {
     } else {
       return undefined;
     }
+    return null;
   }
 
   async getUserInfo(req: Request): Promise<User> {
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
-      return await this.tokenService.getUserByToken(token);
+      return this.tokenService.getUserByToken(token);
     }
+    return null;
   }
 
   // async deleteLastUser(): Promise<void> {

@@ -1,7 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
 import UserModule from "../user/user.module";
 import TokenModule from "../token/token.module";
-import { AdminMiddleware } from "./admin.middleware";
+import AdminMiddleware from "./admin.middleware";
 import AdminController from "./admin.controller";
 import AuthMiddleware from "../auth/auth.middleware";
 import AdminService from "./admin.service";

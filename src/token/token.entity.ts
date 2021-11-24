@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
-import User from "../user/user.entity";
 import { v4 as uuid } from "uuid";
+import User from "../user/user.entity";
 
 const Id: string = uuid();
 

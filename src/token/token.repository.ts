@@ -17,24 +17,24 @@ class TokenRepository implements ITokenRepository {
       const current = new Date();
       return new Date(current.getTime() + 86400000 * days).toISOString(); // + days in ms
     };
-    const Token = this.ormRepository.create({
+    const token: Token = this.ormRepository.create({
       id: uuid(),
       accessToken: uuid(),
       refreshToken: uuid(),
       expiresIn: addSomeDays(2),
       userId: user,
     });
-    await this.ormRepository.save(Token);
+    await this.ormRepository.save(token);
   }
 
   public async findByToken(token: string): Promise<Token | undefined> {
-    return await this.ormRepository.findOne({
+    return this.ormRepository.findOne({
       where: { token },
     });
   }
 
   public async findAll(): Promise<Token[]> {
-    return await this.ormRepository.find();
+    return this.ormRepository.find();
   }
 
   public async remove(token: string): Promise<void> {

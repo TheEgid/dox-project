@@ -1,8 +1,8 @@
 import { Logger, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { configConnection, connectionOptions } from "./database.config";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { configConnection, connectionOptions } from "./database.config";
 
 const appConfigModule = ConfigModule.forRoot({
   envFilePath: [".env"],

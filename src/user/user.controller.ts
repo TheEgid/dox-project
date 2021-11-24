@@ -24,16 +24,15 @@ export default class UserController {
     const newtoken = await this.userService.userSignup(user);
     if (newtoken instanceof Token) {
       return newtoken;
-    } else {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.NOT_ACCEPTABLE,
-          message: `Already logged as ${user.email}`,
-          error: "NOT_ACCEPTABLE",
-        },
-        HttpStatus.NOT_ACCEPTABLE
-      );
     }
+    throw new HttpException(
+      {
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: `Already logged as ${user.email}`,
+        error: "NOT_ACCEPTABLE",
+      },
+      HttpStatus.NOT_ACCEPTABLE
+    );
   }
 
   @Post("/api/signin")
@@ -41,21 +40,20 @@ export default class UserController {
     const oldtoken = await this.userService.userSignin(user);
     if (oldtoken instanceof Token) {
       return oldtoken;
-    } else {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.UNAUTHORIZED,
-          message: "Wrong Password or Username",
-          error: "UNAUTHORIZED",
-        },
-        HttpStatus.UNAUTHORIZED
-      );
     }
+    throw new HttpException(
+      {
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: "Wrong Password or Username",
+        error: "UNAUTHORIZED",
+      },
+      HttpStatus.UNAUTHORIZED
+    );
   }
 
   @Get("/api/info")
   async getId(@Req() req: Request): Promise<User> {
-    return await this.userService.getUserInfo(req);
+    return this.userService.getUserInfo(req);
   }
 
   @Get("/api/logout")

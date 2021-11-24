@@ -11,11 +11,11 @@ export default class AdminController {
   // // Время задержки сервера
   @Get("/api/latency")
   async getPing(): Promise<IPingResult> {
-    return await this.adminService.getLatency();
+    return this.adminService.getLatency();
   }
 
   @Get("/api/users")
   async getUsers(): Promise<User[]> {
-    return await this.adminService.getUsers();
+    return this.adminService.getUsers();
   }
 }

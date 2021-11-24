@@ -1,8 +1,7 @@
 import { IsEmail, MinLength } from "class-validator";
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from "typeorm";
-import Token from "../token/token.entity";
-
 import { v4 as uuid } from "uuid";
+import Token from "../token/token.entity";
 
 const Id: string = uuid();
 

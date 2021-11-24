@@ -7,7 +7,7 @@ export default class TokenService {
   private readonly DbConnection = () => getConnection(process.env.DB_NAME);
 
   async getUserByToken(refreshToken: string): Promise<User> {
-    return await this.DbConnection()
+    return this.DbConnection()
       .getRepository(User)
       .createQueryBuilder("user")
       .leftJoinAndSelect("token", "token", "token.userId = user.id")
@@ -16,7 +16,7 @@ export default class TokenService {
   }
 
   async getTokenByUser(user: User): Promise<Token> {
-    return await this.DbConnection()
+    return this.DbConnection()
       .getRepository(Token)
       .createQueryBuilder("token")
       .leftJoinAndSelect("user", "user", "token.userId = user.id")

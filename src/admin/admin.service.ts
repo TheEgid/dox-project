@@ -12,7 +12,7 @@ export default class AdminService {
     function update(progress: number, total: number): void {
       Logger.log(`[Ping] ${progress}/${total}`);
     }
-    return await ping(
+    return ping(
       {
         address: process.env.PING_ADRESS,
         attempts: Number(process.env.PING_ATTEMPTS),
@@ -25,6 +25,6 @@ export default class AdminService {
 
   async getUsers(): Promise<User[]> {
     const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
-    return await userRepo.findAll();
+    return userRepo.findAll();
   }
 }

@@ -1,8 +1,7 @@
 import { EntityRepository, getConnection, Repository } from "typeorm";
+import * as argon2 from "argon2";
 import User from "./user.entity";
 import IUsersRepository from "./user.repository.interface";
-import { Logger } from "@nestjs/common";
-import * as argon2 from "argon2";
 
 @EntityRepository(User)
 class UsersRepository implements IUsersRepository {
@@ -21,18 +20,18 @@ class UsersRepository implements IUsersRepository {
     if (valid === false) {
       return undefined;
     }
-    return await this.ormRepository.findOne({
+    return this.ormRepository.findOne({
       where: { email },
       withDeleted: false,
     });
   }
 
   public async findAll(): Promise<User[]> {
-    return await this.ormRepository.find();
+    return this.ormRepository.find();
   }
 
   public async findByEmail(email: string): Promise<User | undefined> {
-    return await this.ormRepository.findOne({
+    return this.ormRepository.findOne({
       where: { email },
       withDeleted: false,
     });
@@ -40,10 +39,9 @@ class UsersRepository implements IUsersRepository {
 
   public async save(userData: User): Promise<User> {
     if (userData.hashedPassword.startsWith("$argon2i$v=19$m=4096,t=3,p=1$") === false) {
-      Logger.log(argon2.hash);
       userData.hashedPassword = await argon2.hash(userData.hashedPassword);
     }
-    return await this.ormRepository.save(userData);
+    return this.ormRepository.save(userData);
   }
 
   public async create(userData: User): Promise<User> {
@@ -53,7 +51,9 @@ class UsersRepository implements IUsersRepository {
   }
 
   public async removeLast(): Promise<void> {
-    const user: User = await this.ormRepository.findOne({ order: { id: "DESC" } });
+    const user: User = await this.ormRepository.findOne({
+      order: { id: "DESC" },
+    });
     await this.ormRepository.delete(user.id);
   }
 }

@@ -11,6 +11,7 @@ export class HealthcheckMiddleware implements NestMiddleware {
 @Injectable()
 export class AppLoggerMiddleware implements NestMiddleware {
   private logger = new Logger("HTTP");
+
   use(request: Request, response: Response, next: NextFunction): void {
     const { method, path: url } = request;
     response.on("close", () => {

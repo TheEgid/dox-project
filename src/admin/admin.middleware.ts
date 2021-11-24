@@ -4,7 +4,7 @@ import TokenService from "../token/token.service";
 import User from "../user/user.entity";
 
 @Injectable()
-export class AdminMiddleware implements NestMiddleware {
+export default class AdminMiddleware implements NestMiddleware {
   constructor(private readonly tokenService: TokenService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
