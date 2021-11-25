@@ -65,10 +65,19 @@ export default class UserService {
   async getUserInfo(req: Request): Promise<User> {
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
-      return this.tokenService.getUserByToken(token);
+      return this.getUserByToken(token);
     }
     return null;
   }
+
+  async getUserByToken(refreshToken: string): Promise<User | undefined> {
+    return this.userRepository
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("token", "token", "token.userId = user.id")
+      .where("token.refreshToken = :1", { 1: refreshToken })
+      .getOne();
+  }
+  //
 }
 
 //
