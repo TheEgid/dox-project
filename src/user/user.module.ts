@@ -8,7 +8,7 @@ import AuthMiddleware from "../auth/auth.middleware";
 import Token from "../token/token.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Token]), TokenService],
+  imports: [TypeOrmModule.forFeature([User, Token])],
   exports: [UserService],
   controllers: [UserController],
   providers: [UserService, TokenService],

@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Request } from "express";
-import User from "./user.entity";
-import Token from "../token/token.entity";
-import TokenService from "../token/token.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as argon2 from "argon2";
+import User from "./user.entity";
+import Token from "../token/token.entity";
+import TokenService from "../token/token.service";
 
 @Injectable()
 export default class UserService {
@@ -77,10 +77,8 @@ export default class UserService {
       .where("token.refreshToken = :1", { 1: refreshToken })
       .getOne();
   }
-  //
 }
 
-//
 // if (all) {
 //   // Если true удаляем(заменяем пустыми, что тоже так себе. Опять же тупо с Mongo не очень удобно работать, так проще всего было. Так метод Update юзал) все токены
 //   user.token.accessToken = process.env.GET_LOGOUT_TOKEN;
