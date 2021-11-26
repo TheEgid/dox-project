@@ -1,33 +1,33 @@
 import User from "../user/user.entity";
 
 export class TokenDTO {
-  accessToken: string;
+  readonly accessToken: string;
 
-  refreshToken: string;
+  readonly refreshToken: string;
 
-  expiresIn: string;
+  readonly expiresIn: string;
 
-  userId: User;
+  readonly userId: User;
 }
 
 // export class CreateTokenDto {
-//   accessToken: string;
+//   readonly accessToken: string;
 //
-//   refreshToken: string;
+//   readonly refreshToken: string;
 //
-//   expiresIn: string;
+//   readonly expiresIn: string;
 //
-//   userId: User;
+//   readonly userId: User;
 // }
 
 export class UpdateTokenDto {
   id: string;
 
-  accessToken: string;
+  readonly accessToken: string;
 
-  refreshToken: string;
+  readonly refreshToken: string;
 
-  expiresIn: string;
+  readonly expiresIn: string;
 
-  userId: User;
+  readonly userId: User;
 }

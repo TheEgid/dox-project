@@ -40,11 +40,10 @@ export default class UserService {
       return undefined;
     }
     const valid = await argon2.verify(oldUser.hashedPassword, user.hashedPassword);
-    if (valid === false) {
+    if (!valid) {
       return undefined;
     }
-    await this.tokenService.setToken(oldUser);
-    return this.tokenService.getTokenByUser(oldUser);
+    return this.tokenService.updateToken(oldUser);
   }
 
   async userLogout(req: Request): Promise<void> {
@@ -70,7 +69,7 @@ export default class UserService {
     return null;
   }
 
-  async getUserByToken(refreshToken: string): Promise<User | undefined> {
+  async getUserByToken(refreshToken: string): Promise<User> {
     return this.userRepository
       .createQueryBuilder("user")
       .leftJoinAndSelect("token", "token", "token.userId = user.id")

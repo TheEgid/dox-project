@@ -3,10 +3,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import User from "../user/user.entity";
+import { UUIDv4 } from "uuid-v4-validator";
 
 @Injectable()
 export default class AdminService {
-  // private readonly DbConnection = () => getConnection(process.env.DB_NAME);
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>
@@ -28,11 +28,13 @@ export default class AdminService {
   }
 
   async findAll(): Promise<User[]> {
-    // const userRepo = this.DbConnection().getCustomRepository(UsersRepository);
     return this.userRepository.find();
   }
 
   async findOne(id: string) {
+    if (!UUIDv4.validate(id)) {
+      return undefined;
+    }
     return this.userRepository.findOne(id);
   }
 }

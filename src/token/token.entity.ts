@@ -1,8 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
-import { v4 as uuid } from "uuid";
+import { UUIDv4 as uuid } from "uuid-v4-validator";
 import User from "../user/user.entity";
-
-const Id: string = uuid();
 
 @Entity()
 export default class Token {
@@ -24,10 +22,10 @@ export default class Token {
 
   constructor() {
     if (!this.id) {
-      this.id = Id;
+      this.id = String(new uuid());
     }
     if (!this.refreshToken) {
-      this.refreshToken = Id;
+      this.refreshToken = new uuid().id;
     }
   }
 }

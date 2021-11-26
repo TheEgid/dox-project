@@ -53,7 +53,18 @@ export default class UserController {
 
   @Get("info")
   async getUserInfo(@Req() req: Request): Promise<User> {
-    return this.userService.getUserInfo(req);
+    const infoUser = await this.userService.getUserInfo(req);
+    if (infoUser instanceof User) {
+      return infoUser;
+    }
+    throw new HttpException(
+      {
+        statusCode: HttpStatus.NO_CONTENT,
+        message: "Error user info",
+        error: "NO_CONTENT",
+      },
+      HttpStatus.NO_CONTENT
+    );
   }
 
   @Get("logout")

@@ -1,19 +1,37 @@
 export class DocumentDto {
-  name: string;
+  readonly userHiddenName: string;
 
-  age: number;
+  readonly createdAt: Date;
+
+  readonly filename: string;
+
+  readonly content: string;
+
+  readonly docType: string;
 }
 
 export class CreateDocumentDto {
-  name: string;
+  readonly userHiddenName: string;
 
-  age: number;
+  readonly createdAt: Date;
+
+  readonly filename: string;
+
+  readonly content: string;
+
+  readonly docType: string;
 }
 
 export class UpdateDocumentDto {
   id: number;
 
-  name: string;
+  readonly userHiddenName: string;
 
-  age: number;
+  readonly createdAt: Date;
+
+  readonly filename: string;
+
+  readonly content: string;
+
+  readonly docType: string;
 }

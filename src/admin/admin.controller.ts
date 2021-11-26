@@ -1,4 +1,4 @@
-import { Controller, Get, Injectable, Param } from "@nestjs/common";
+import { Controller, Get, HttpException, HttpStatus, Injectable, Param } from "@nestjs/common";
 import { IPingResult } from "@network-utils/tcp-ping";
 import AdminService from "./admin.service";
 import User from "../user/user.entity";
@@ -20,7 +20,18 @@ export default class AdminController {
   }
 
   @Get("user/:id")
-  async findOne(@Param("id") id: string) {
-    return this.adminService.findOne(id);
+  async findOne(@Param("id") id: string): Promise<User> {
+    const user = await this.adminService.findOne(id);
+    if (user instanceof User) {
+      return user;
+    }
+    throw new HttpException(
+      {
+        statusCode: HttpStatus.NOT_ACCEPTABLE,
+        message: `Wrong Id: ${id}`,
+        error: "NOT_ACCEPTABLE",
+      },
+      HttpStatus.NOT_ACCEPTABLE
+    );
   }
 }

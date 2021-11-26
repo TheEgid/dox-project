@@ -19,8 +19,11 @@ export default class DocumentController {
   @Post("create")
   createDocument(@Body() userDto: DocumentDto) {
     const createDocumentDto: CreateDocumentDto = {
-      name: userDto.name,
-      age: userDto.age,
+      userHiddenName: userDto.userHiddenName,
+      createdAt: userDto.createdAt,
+      filename: userDto.filename,
+      content: userDto.content,
+      docType: userDto.docType,
     };
 
     return this.documentService.createDocument(createDocumentDto);
@@ -30,8 +33,11 @@ export default class DocumentController {
   updateDocument(@Param("id") id: number, @Body() documentDto: DocumentDto) {
     const updateDocumentDto: UpdateDocumentDto = {
       id,
-      name: documentDto.name,
-      age: documentDto.age,
+      userHiddenName: documentDto.userHiddenName,
+      createdAt: documentDto.createdAt,
+      filename: documentDto.filename,
+      content: documentDto.content,
+      docType: documentDto.docType,
     };
     return this.documentService.updateDocument(updateDocumentDto);
   }

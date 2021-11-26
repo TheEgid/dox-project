@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { v4 as uuid } from "uuid";
+import { UUIDv4 as uuid } from "uuid-v4-validator";
 import User from "../user/user.entity";
 import Token from "./token.entity";
 import { TokenDTO } from "./token.dto";
@@ -32,7 +32,7 @@ export default class UserService {
       const id = oldToken.id;
       const updatedToken: TokenDTO = {
         accessToken: oldToken.accessToken,
-        refreshToken: uuid(),
+        refreshToken: new uuid().id,
         expiresIn: this.addSomeDays(2),
         userId: user,
       };
@@ -46,17 +46,13 @@ export default class UserService {
     const oldToken = await this.getTokenByUser(user);
     if (!(oldToken instanceof Token)) {
       const token: Token = this.tokenRepository.create({
-        id: uuid(),
-        accessToken: uuid(),
-        refreshToken: uuid(),
+        id: new uuid().id,
+        accessToken: new uuid().id,
+        refreshToken: new uuid().id,
         expiresIn: this.addSomeDays(2),
         userId: user,
       });
       await this.tokenRepository.save(token);
     }
   }
-
-  // async findByToken(token: string): Promise<Token | undefined> {
-  //   return this.DbConnection().getRepository(Token).findOne({ where: { token } });
-  // }
 }

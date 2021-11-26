@@ -27,22 +27,19 @@ export default class DocumentService {
     const id = updateDocumentDto.id;
 
     const documentDto: DocumentDto = {
-      name: updateDocumentDto.name,
-      age: updateDocumentDto.age,
+      userHiddenName: updateDocumentDto.userHiddenName,
+      createdAt: updateDocumentDto.createdAt,
+      filename: updateDocumentDto.filename,
+      content: updateDocumentDto.content,
+      docType: updateDocumentDto.docType,
     };
-
-    documentDto.name = updateDocumentDto.name;
-    documentDto.age = updateDocumentDto.age;
 
     await this.documentRepository.update(id, documentDto);
     return this.documentRepository.findOne(id);
   }
 
   async deleteDocument(id: number) {
-    const message = `Deleted Document with id ${id}`;
-
     await this.documentRepository.delete(id);
-
-    return message;
+    return `Deleted Document with id ${id}`;
   }
 }

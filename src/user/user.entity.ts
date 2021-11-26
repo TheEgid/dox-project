@@ -1,9 +1,7 @@
 import { IsEmail, MinLength } from "class-validator";
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from "typeorm";
-import { v4 as uuid } from "uuid";
+import { UUIDv4 as uuid } from "uuid-v4-validator";
 import Token from "../token/token.entity";
-
-const Id: string = uuid();
 
 @Entity()
 export default class User {
@@ -35,7 +33,7 @@ export default class User {
 
   constructor() {
     if (!this.id) {
-      this.id = Id;
+      this.id = new uuid().id;
     }
   }
 }
