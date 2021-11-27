@@ -28,7 +28,7 @@ export default class UserController {
     throw new HttpException(
       {
         statusCode: HttpStatus.NOT_ACCEPTABLE,
-        message: `Already logged as ${user.email}`,
+        message: `Already signup as ${user.email}`,
         error: "NOT_ACCEPTABLE",
       },
       HttpStatus.NOT_ACCEPTABLE

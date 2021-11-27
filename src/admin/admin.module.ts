@@ -23,13 +23,3 @@ export default class AdminModule implements NestModule {
       .forRoutes(AdminController);
   }
 }
-// @Module({
-//   imports: [
-//     TypeOrmModule.forFeature([Token]),
-//     // PassportModule.register({ defaultStrategy: 'jwt' }),
-//   ],
-//   exports: [TokenService],
-//   // controllers: [UserController],
-//   providers: [TokenService],
-// })
-// export class TokenModule {}

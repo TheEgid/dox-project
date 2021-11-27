@@ -2,9 +2,9 @@ import { Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UUIDv4 as uuid } from "uuid-v4-validator";
+import { CreateTokenDto, TokenDTO, UpdateTokenDto } from "./token.dto";
 import User from "../user/user.entity";
 import Token from "./token.entity";
-import { TokenDTO } from "./token.dto";
 
 @Injectable()
 export default class UserService {
@@ -27,32 +27,31 @@ export default class UserService {
   }
 
   async updateToken(user: User): Promise<Token | undefined> {
-    const oldToken = await this.getTokenByUser(user);
-    if (!(oldToken instanceof Token && Date.now() < Date.parse(oldToken.expiresIn))) {
-      const id = oldToken.id;
-      const updatedToken: TokenDTO = {
-        accessToken: oldToken.accessToken,
+    const updateTokenDto: UpdateTokenDto = await this.getTokenByUser(user);
+    if (!(updateTokenDto instanceof Token && Date.now() < Date.parse(updateTokenDto.expiresIn))) {
+      const id = updateTokenDto.id;
+      const tokenDTO: TokenDTO = {
+        accessToken: updateTokenDto.accessToken,
         refreshToken: new uuid().id,
         expiresIn: this.addSomeDays(2),
         userId: user,
       };
-      await this.tokenRepository.update(id, updatedToken);
+      await this.tokenRepository.update(id, tokenDTO);
       return this.tokenRepository.findOne(id);
     }
-    return oldToken;
+    return updateTokenDto;
   }
 
   async setToken(user: User): Promise<void> {
     const oldToken = await this.getTokenByUser(user);
     if (!(oldToken instanceof Token)) {
-      const token: Token = this.tokenRepository.create({
-        id: new uuid().id,
+      const createTokenDto: CreateTokenDto = {
         accessToken: new uuid().id,
         refreshToken: new uuid().id,
         expiresIn: this.addSomeDays(2),
         userId: user,
-      });
-      await this.tokenRepository.save(token);
+      };
+      await this.tokenRepository.save(createTokenDto);
     }
   }
 }
