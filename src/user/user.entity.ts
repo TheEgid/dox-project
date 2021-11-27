@@ -1,10 +1,10 @@
 import { IsEmail, MinLength } from "class-validator";
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from "typeorm";
-import { UUIDv4 as uuid } from "uuid-v4-validator";
 import Token from "../token/token.entity";
+import UserDto from "./user.dto";
 
 @Entity()
-export default class User {
+export default class User extends UserDto {
   @PrimaryGeneratedColumn("uuid")
   readonly id: string;
 
@@ -30,10 +30,4 @@ export default class User {
 
   @OneToMany(() => Token, (token) => token.userId)
   token: Token;
-
-  constructor() {
-    if (!this.id) {
-      this.id = new uuid().id;
-    }
-  }
 }

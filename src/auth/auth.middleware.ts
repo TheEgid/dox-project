@@ -2,7 +2,7 @@ import { NestMiddleware, HttpStatus, HttpException, Injectable } from "@nestjs/c
 import { NextFunction, Request, Response } from "express";
 import UserService from "../user/user.service";
 import TokenService from "../token/token.service";
-import Token from "../token/token.entity";
+import TokenDto from "../token/token.dto";
 
 @Injectable()
 export default class AuthMiddleware implements NestMiddleware {
@@ -17,9 +17,9 @@ export default class AuthMiddleware implements NestMiddleware {
       const header = authorizationHeader.split(" ", 2);
       const [, inputToken] = header;
       const curUser = await this.userService.getUserByToken(inputToken);
-      //проверить срок действия!!
-      const updatedToken = await this.tokenService.updateToken(curUser);
-      if (updatedToken instanceof Token) {
+      // проверка срока действия!!
+      const checkedToken = await this.tokenService.updateToken(curUser);
+      if (checkedToken instanceof TokenDto) {
         next();
       } else {
         throw new HttpException(

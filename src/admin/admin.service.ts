@@ -3,6 +3,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import User from "../user/user.entity";
+import UserDto from "../user/user.dto";
 import { UUIDv4 } from "uuid-v4-validator";
 
 @Injectable()
@@ -27,7 +28,7 @@ export default class AdminService {
     ).then((result) => result);
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserDto[]> {
     return this.userRepository.find();
   }
 

@@ -10,8 +10,8 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import UserService from "./user.service";
-import User from "./user.entity";
-import Token from "../token/token.entity";
+import TokenDto from "../token/token.dto";
+import UserDto from "./user.dto";
 
 @Injectable()
 @Controller("api/auth")
@@ -20,9 +20,9 @@ export default class UserController {
 
   // Регистрация пользователя
   @Post("signup")
-  async userSignup(@Body() user: User): Promise<Token> {
+  async userSignup(@Body() user: UserDto): Promise<TokenDto> {
     const newToken = await this.userService.userSignup(user);
-    if (newToken instanceof Token) {
+    if (newToken instanceof TokenDto) {
       return newToken;
     }
     throw new HttpException(
@@ -36,9 +36,9 @@ export default class UserController {
   }
 
   @Post("signin")
-  async userSignin(@Body() user: User): Promise<Token> {
+  async userSignin(@Body() user: UserDto): Promise<TokenDto> {
     const oldtoken = await this.userService.userSignin(user);
-    if (oldtoken instanceof Token) {
+    if (oldtoken instanceof TokenDto) {
       return oldtoken;
     }
     throw new HttpException(
@@ -52,9 +52,9 @@ export default class UserController {
   }
 
   @Get("info")
-  async getUserInfo(@Req() req: Request): Promise<User> {
+  async getUserInfo(@Req() req: Request): Promise<UserDto> {
     const infoUser = await this.userService.getUserInfo(req);
-    if (infoUser instanceof User) {
+    if (infoUser instanceof UserDto) {
       return infoUser;
     }
     throw new HttpException(
@@ -72,74 +72,3 @@ export default class UserController {
     await this.userService.userLogout(req);
   }
 }
-
-// // ????
-// @Delete("/delete-last-user/:key")
-// @OnUndefined(StatusCodes.OK)
-// public async deleteLastUser(@Param("key") key: string): Promise<void> {
-//   if (key === process.env.ACCESS_DELETE_KEY) {
-//     return await this.userService.deleteLastUser();
-//   }
-// }
-
-// @Controller()
-// export default class UserController {
-//   @Get("/user/:id")
-//   @OnUndefined(StatusCodes.BAD_REQUEST)
-//   @UseBefore(loggingBefore)
-//   @UseAfter(loggingAfter)
-//   public async getUserById(@Param("id") id: string) {
-//     return await getConnection(process.env.DB_NAME)
-//       .getCustomRepository(UsersRepository)
-//       .findById(id);
-//   }
-//
-
-//   connection()
-// DatabaseConnectionFacade.multipleConnections().then(() =>
-//   getRepository(User).find({ where: { id: id } })
-// );
-// return getConnection()
-// return `This action returns user #${id}`;
-
-// @Post("/users/:id")
-// @OnUndefined(204)
-// postOne(@Param("id") id: number, @Body() info: Info) {
-//   console.log(JSON.stringify(info));
-//   console.log(`tracedId = ${httpContext.get("traceId") as string}`);
-// }
-// }
-
-/**
- * Envoie un email
- * @param subject l'objet du mail
- * @param text le corps du mail
- * @param to la liste des destinatire (email séparés par des )
- * @param from l'adresse utilisé pour envoyer le mail
- */
-
-// export function sendEmail(subject: string, text: string, to, from = "system@absolumentg.fr") {
-//   const transport = nodemailer.createTransport({
-//     host: process.env.SMTP_HOST,
-//     port: process.env.SMTP_PORT,
-//     secure: true,
-//     auth: {
-//       user: process.env.SMTP_USER,
-//       pass: process.env.SMTP_PASS
-//     }
-//   });
-//
-//   const email = {
-//     from,
-//     to,
-//     subject,
-//     text
-//   };
-//   transport.sendMail(email, function(err, info) {
-//     if (err) {
-//       logger.error("Erreur lors de l'envoie d'email", err);
-//     } else {
-//       logger.info("Email envoyé", info);
-//     }
-//   });
-// }

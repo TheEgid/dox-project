@@ -2,8 +2,8 @@ import { Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UUIDv4 as uuid } from "uuid-v4-validator";
-import { CreateTokenDto, TokenDTO, UpdateTokenDto } from "./token.dto";
-import User from "../user/user.entity";
+import TokenDto from "./token.dto";
+import UserDto from "../user/user.dto";
 import Token from "./token.entity";
 
 @Injectable()
@@ -17,7 +17,7 @@ export default class UserService {
     return new Date(new Date().getTime() + 86400000 * days).toISOString(); // + days in ms;
   };
 
-  async getTokenByUser(user: User): Promise<Token> {
+  async getTokenByUser(user: UserDto): Promise<TokenDto> {
     return this.tokenRepository
       .createQueryBuilder("token")
       .leftJoinAndSelect("user", "user", "token.userId = user.id")
@@ -26,32 +26,23 @@ export default class UserService {
       .getOne();
   }
 
-  async updateToken(user: User): Promise<Token | undefined> {
-    const updateTokenDto: UpdateTokenDto = await this.getTokenByUser(user);
-    if (!(updateTokenDto instanceof Token && Date.now() < Date.parse(updateTokenDto.expiresIn))) {
-      const id = updateTokenDto.id;
-      const tokenDTO: TokenDTO = {
-        accessToken: updateTokenDto.accessToken,
-        refreshToken: new uuid().id,
-        expiresIn: this.addSomeDays(2),
-        userId: user,
-      };
-      await this.tokenRepository.update(id, tokenDTO);
-      return this.tokenRepository.findOne(id);
+  async updateToken(user: UserDto): Promise<TokenDto | undefined> {
+    const checkedToken = await this.getTokenByUser(user);
+    if (!(checkedToken instanceof TokenDto && Date.now() < Date.parse(checkedToken.expiresIn))) {
+      return this.setToken(user, checkedToken.accessToken);
     }
-    return updateTokenDto;
+    return checkedToken;
   }
 
-  async setToken(user: User): Promise<void> {
-    const oldToken = await this.getTokenByUser(user);
-    if (!(oldToken instanceof Token)) {
-      const createTokenDto: CreateTokenDto = {
-        accessToken: new uuid().id,
-        refreshToken: new uuid().id,
-        expiresIn: this.addSomeDays(2),
-        userId: user,
-      };
-      await this.tokenRepository.save(createTokenDto);
-    }
+  async setToken(user: UserDto, oldAccessToken?: string): Promise<TokenDto> {
+    const tokenDto: TokenDto = {
+      id: new uuid().id,
+      accessToken: oldAccessToken ? oldAccessToken : new uuid().id,
+      refreshToken: new uuid().id,
+      expiresIn: this.addSomeDays(2),
+      userId: user,
+    };
+    await this.tokenRepository.save(tokenDto);
+    return this.tokenRepository.findOne(tokenDto.id);
   }
 }

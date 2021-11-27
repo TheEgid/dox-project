@@ -6,6 +6,8 @@ import * as argon2 from "argon2";
 import User from "./user.entity";
 import Token from "../token/token.entity";
 import TokenService from "../token/token.service";
+import UserDto from "./user.dto";
+import TokenDto from "../token/token.dto";
 
 @Injectable()
 export default class UserService {
@@ -18,11 +20,11 @@ export default class UserService {
   ) {}
 
   // Регистрация
-  async userSignup(newUser: User): Promise<Token> {
+  async userSignup(newUser: UserDto): Promise<TokenDto> {
     const userRepeat = await this.userRepository.findOne({
       where: { email: newUser.email },
     });
-    if (!(userRepeat instanceof User)) {
+    if (!(userRepeat instanceof UserDto)) {
       newUser.hashedPassword = await argon2.hash(newUser.hashedPassword);
       await this.userRepository.save(newUser);
       await this.tokenService.setToken(newUser);
@@ -32,11 +34,11 @@ export default class UserService {
   }
 
   // Вход
-  async userSignin(user: User): Promise<Token> {
+  async userSignin(user: UserDto): Promise<TokenDto> {
     const oldUser = await this.userRepository.findOne({
       where: { email: user.email },
     });
-    if (!(oldUser instanceof User)) {
+    if (!(oldUser instanceof UserDto)) {
       return undefined;
     }
     const valid = await argon2.verify(oldUser.hashedPassword, user.hashedPassword);
@@ -52,7 +54,7 @@ export default class UserService {
       const removedToken = await this.tokenRepository.findOne({
         where: { refreshToken: token },
       });
-      if (!(removedToken instanceof Token)) {
+      if (!(removedToken instanceof TokenDto)) {
         return undefined;
       }
       await this.tokenRepository.remove([removedToken]);
@@ -61,7 +63,7 @@ export default class UserService {
     }
   }
 
-  async getUserInfo(req: Request): Promise<User> {
+  async getUserInfo(req: Request): Promise<UserDto> {
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
       return this.getUserByToken(token);
@@ -69,7 +71,7 @@ export default class UserService {
     return null;
   }
 
-  async getUserByToken(refreshToken: string): Promise<User> {
+  async getUserByToken(refreshToken: string): Promise<UserDto> {
     return this.userRepository
       .createQueryBuilder("user")
       .leftJoinAndSelect("token", "token", "token.userId = user.id")
@@ -77,16 +79,3 @@ export default class UserService {
       .getOne();
   }
 }
-
-// if (all) {
-//   // Если true удаляем(заменяем пустыми, что тоже так себе. Опять же тупо с Mongo не очень удобно работать, так проще всего было. Так метод Update юзал) все токены
-//   user.token.accessToken = process.env.GET_LOGOUT_TOKEN;
-//   user.token.refreshToken = process.env.GET_LOGOUT_TOKEN;
-//   return await TokenService.getUserByToken(token);
-//   // repository.save(user);
-// } else {
-//   // Если false удаляем только текущий
-//   user.token.accessToken = process.env.GET_LOGOUT_TOKEN;
-//   // Сохраняем изменения
-//   repository.save(user);
-// }

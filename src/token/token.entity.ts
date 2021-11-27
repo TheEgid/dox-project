@@ -1,16 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
-import { UUIDv4 as uuid } from "uuid-v4-validator";
 import User from "../user/user.entity";
+import TokenDto from "./token.dto";
 
 @Entity()
-export default class Token {
+export default class Token extends TokenDto {
   @PrimaryGeneratedColumn("uuid")
   readonly id: string;
 
   @Column()
   accessToken: string;
 
-  @Column()
+  @Column({ nullable: true })
   refreshToken: string;
 
   @Column({ type: "timestamp" })
@@ -19,13 +19,4 @@ export default class Token {
   @JoinColumn({ name: "userId" })
   @ManyToOne(() => User, (user) => user.token)
   userId: User;
-
-  constructor() {
-    if (!this.id) {
-      this.id = String(new uuid());
-    }
-    if (!this.refreshToken) {
-      this.refreshToken = new uuid().id;
-    }
-  }
 }

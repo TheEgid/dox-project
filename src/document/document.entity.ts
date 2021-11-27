@@ -1,7 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm";
+import { DocumentDto } from "./document.dto";
 
 @Entity()
-export default class Document {
+export default class Document extends DocumentDto {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -10,6 +11,9 @@ export default class Document {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ nullable: true })
+  updatedAt: Date;
 
   @Column({ length: 160 })
   filename: string;
