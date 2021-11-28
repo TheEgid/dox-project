@@ -4,7 +4,7 @@ import AdminService from "./admin.service";
 import UserDto from "../user/user.dto";
 
 @Injectable()
-@Controller("api/admin")
+@Controller("admin")
 export default class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

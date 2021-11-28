@@ -14,7 +14,7 @@ import TokenDto from "../token/token.dto";
 import UserDto from "./user.dto";
 
 @Injectable()
-@Controller("api/auth")
+@Controller("auth")
 export default class UserController {
   constructor(private readonly userService: UserService) {}
 

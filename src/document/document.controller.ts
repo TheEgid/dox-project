@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common"
 import { DocumentDto, UpdateDocumentDto } from "./document.dto";
 import DocumentService from "./document.service";
 
-@Controller("api/document")
+@Controller("document")
 export default class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 

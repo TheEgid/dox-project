@@ -20,6 +20,6 @@ export default class AppModule implements NestModule {
       .apply(AppLoggerMiddleware)
       .forRoutes("*")
       .apply(HealthcheckMiddleware)
-      .forRoutes({ path: "/api/status/", method: RequestMethod.GET });
+      .forRoutes({ path: "status", method: RequestMethod.GET });
   }
 }
