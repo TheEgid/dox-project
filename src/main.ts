@@ -1,11 +1,13 @@
 import { NestFactory } from "@nestjs/core";
-import { Logger } from "@nestjs/common";
 import AppModule from "./app.module";
+import { Logger } from "@nestjs/common";
 
 const port = Number(process.env.SERVER_PORT);
 
-async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+async function bootstrap() {
+  const appOptions = {};
+  const app = await NestFactory.create(AppModule, appOptions);
+  // app.setGlobalPrefix("api");
   await app.listen(port);
 }
 
