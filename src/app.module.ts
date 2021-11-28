@@ -7,9 +7,10 @@ import UserModule from "./user/user.module";
 import AdminModule from "./admin/admin.module";
 import DataBaseModule from "./database/database.module";
 import DocumentModule from "./document/document.module";
+import UploadDocModule from "./uploadDoc/uploadDoc.module";
 
 @Module({
-  imports: [DataBaseModule, UserModule, TokenModule, AdminModule, DocumentModule],
+  imports: [UploadDocModule, DataBaseModule, UserModule, TokenModule, AdminModule, DocumentModule],
   controllers: [AppController],
   providers: [AppService],
 })
