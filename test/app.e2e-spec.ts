@@ -1,30 +1,14 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { configConnection, connectionOptions } from "../src/database/database.config";
 import request from "supertest";
-import AppModule from "../src/app.module";
+import { createModuleFixture } from "./common.fixture";
+
 import { DocumentDto } from "../src/document/document.dto";
 
-describe("Root [End To End]", () => {
+describe("Root [end-to-end]", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot(
-          Object.assign(
-            connectionOptions,
-            {
-              logging: false,
-            },
-            configConnection()
-          )
-        ),
-        AppModule,
-      ],
-    }).compile();
-
+    const moduleFixture = await createModuleFixture();
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix("api");
     // userRepository = moduleFixture.get(UserRepository);
@@ -32,7 +16,7 @@ describe("Root [End To End]", () => {
     await app.init();
   });
 
-  it("GET /api/status", async () => {
+  it("GET status", async () => {
     return request(app.getHttpServer())
       .get("/api/status")
       .then((response) => {
@@ -41,7 +25,7 @@ describe("Root [End To End]", () => {
       });
   });
 
-  it("POST /api/document/create", async () => {
+  it("POST document/create", async () => {
     const isDocumentDto = (object): object is DocumentDto => !!object && "id" in object;
     return request(app.getHttpServer())
       .post("/api/document/create")

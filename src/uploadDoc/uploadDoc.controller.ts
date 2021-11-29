@@ -9,11 +9,11 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import UploadDocService from "./uploadDoc.service";
 
-@Controller("api/upload")
+@Controller("upload")
 export default class UploadDocController {
   constructor(private readonly uploadDocService: UploadDocService) {}
 
-  @Post("/upload")
+  @Post("upload")
   @UseInterceptors(FileInterceptor("customfile"))
   async uploadDocument(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
