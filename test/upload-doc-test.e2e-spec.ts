@@ -1,9 +1,8 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import request from "supertest";
-import { createModuleFixture } from "./common.fixture";
 import * as fs from "fs";
 import path from "path";
-import fileExists from "file-exists";
+import request from "supertest";
+import { initializeBefore } from "./fixture.common";
 
 interface IerrJson {
   statusCode: number;
@@ -11,25 +10,23 @@ interface IerrJson {
   error: string;
 }
 
-interface IdataJson {
+interface IssuccessJson {
   docxPath: string;
   fileContent: string;
 }
 
-const instanceOfSuccessJson = (object: any): object is IdataJson => "fileContent" in object;
+const isInstanceOfSuccessJson = (object: any): object is IssuccessJson => "fileContent" in object;
+const isInstanceOfErrorJson = (object: any): object is IerrJson => "error" in object;
 
 describe("Upload PDF File [end-to-end]", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleFixture = await createModuleFixture();
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix("api");
-    await app.init();
+    app = await initializeBefore();
   });
 
   it("positive POST upload", async () => {
-    const filePath = path.join(__dirname, "testFiles", "test.pdf");
+    const filePath = path.join(__dirname, "testFiles", "test upload.pdf");
     if (!fs.existsSync(filePath)) throw Error(`${filePath} not exists!`);
 
     return request(app.getHttpServer())
@@ -37,33 +34,27 @@ describe("Upload PDF File [end-to-end]", () => {
       .attach("customfile", filePath)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.CREATED);
-        expect(instanceOfSuccessJson(response.body)).toBe(true);
+        expect(isInstanceOfSuccessJson(await response.body)).toBeTruthy();
 
-        const jsonContent = <IdataJson>response.body;
+        const jsonContent = <IssuccessJson>response.body;
         expect(jsonContent.docxPath.endsWith("docx")).toBeTruthy();
         expect(jsonContent.fileContent.length !== 0).toBeTruthy();
-
-        await fileExists(filePath).then((exists) => {
-          expect(exists === true).toBeTruthy();
-        });
+        expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
+        expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
       });
   });
 
   it("negative POST upload", async () => {
-    const filePath = `${__dirname}/testFiles/addresses.7z`;
+    const filePath = path.join(__dirname, "testFiles", "addresses.7z");
     if (!fs.existsSync(filePath)) throw Error(`${filePath} not exists!`);
-
     return request(app.getHttpServer())
       .post("/api/upload/upload")
       .attach("customfile", filePath)
-      .then((response) => {
+      .then(async (response) => {
         expect(response.status).toBe(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        expect(isInstanceOfErrorJson(await response.body)).toBeTruthy();
         const errMsg = <IerrJson>response.body;
         expect(errMsg.message).toBe("only .pdf format allowed");
       });
-  });
-
-  afterAll((done) => {
-    done();
   });
 });

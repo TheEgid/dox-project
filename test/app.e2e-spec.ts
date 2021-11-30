@@ -1,19 +1,13 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { createModuleFixture } from "./common.fixture";
-
 import { DocumentDto } from "../src/document/document.dto";
+import { finalizeAfter, initializeBefore } from "./fixture.common";
 
 describe("Root [end-to-end]", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleFixture = await createModuleFixture();
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix("api");
-    // userRepository = moduleFixture.get(UserRepository);
-    // productRepository = moduleFixture.get(ProductRepository);
-    await app.init();
+    app = await initializeBefore();
   });
 
   it("GET status", async () => {
@@ -41,7 +35,7 @@ describe("Root [end-to-end]", () => {
       });
   });
 
-  afterAll((done) => {
-    done();
+  afterAll(async () => {
+    await finalizeAfter("Document");
   });
 });

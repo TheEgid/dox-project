@@ -17,6 +17,6 @@ export default class Token extends TokenDto {
   expiresIn: string;
 
   @JoinColumn({ name: "userId" })
-  @ManyToOne(() => User, (user) => user.token)
+  @ManyToOne(() => User, (user) => user.token, { cascade: true, onDelete: "CASCADE" })
   userId: User;
 }

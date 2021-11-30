@@ -31,7 +31,8 @@ describe("DocumentService", () => {
     expect(createDocumentSpy).toHaveBeenCalledWith(dto);
   });
 
-  afterAll(() => {
+  afterAll((done) => {
     sandbox.restore();
+    done();
   });
 });

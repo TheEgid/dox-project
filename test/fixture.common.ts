@@ -1,3 +1,4 @@
+import { getConnection } from "typeorm";
 import { Test } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { configConnection, connectionOptions } from "../src/database/database.config";
@@ -5,13 +6,11 @@ import AppModule from "../src/app.module";
 
 const databaseStringAccidentCheck = () => {
   if (process.env.DB_NAME !== "doc-flow-test") {
-    console.error(process.env.DB_NAME);
-    console.error("The test database is the same as the main database. This might be a mistake.");
-    process.exit(1);
+    throw new Error(`The test database ${process.env.DB_NAME} is the same as the main database.`);
   }
 };
 
-export const createModuleFixture = async () => {
+const createModuleFixture = async () => {
   const workTestingModule = Test.createTestingModule({
     imports: [
       TypeOrmModule.forRoot(
@@ -29,3 +28,18 @@ export const createModuleFixture = async () => {
   databaseStringAccidentCheck();
   return workTestingModule;
 };
+
+const initializeBefore = async () => {
+  const moduleFixture = await createModuleFixture();
+  const app = moduleFixture.createNestApplication();
+  app.setGlobalPrefix("api");
+  await app.init();
+  return app;
+};
+
+const finalizeAfter = async (target: string) => {
+  const repository = getConnection(process.env.DB_NAME).getRepository(target);
+  await repository.query(`TRUNCATE TABLE public."${target.toLowerCase()}" CASCADE`);
+};
+
+export { initializeBefore, finalizeAfter };
