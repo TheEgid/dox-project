@@ -7,6 +7,8 @@ import { finalizeAfter, initializeBefore, IErrorRequest } from "./fixture.common
 import TokenDto from "../src/token/token.dto";
 import User from "../src/user/user.entity";
 import UserDto from "../src/user/user.dto";
+import Token from "../src/token/token.entity";
+import TokenService from "../src/token/token.service";
 
 const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
 const isInstanceOfUserDto = (object: any): object is UserDto => "hashedPassword" in object;
@@ -17,8 +19,9 @@ const newUser = {
   hashedPassword: "mocktestpassword",
 };
 
-let newToken;
+let newToken: string;
 const fakeToken = new uuid().id;
+const dayAgo = new Date(new Date().getTime() - 86400000).toISOString(); // - day in ms;
 
 describe("User [end-to-end]", () => {
   let app: INestApplication;
@@ -28,7 +31,7 @@ describe("User [end-to-end]", () => {
   });
 
   // register
-  it("+ POST USER signup", async () => {
+  it("+ POST USER signup (register)", async () => {
     return request(app.getHttpServer())
       .post("/api/auth/signup")
       .send(newUser)
@@ -40,8 +43,7 @@ describe("User [end-to-end]", () => {
       });
   });
 
-  // enter
-  it("+ POST USER signin", async () => {
+  it("+ POST USER signin (entry)", async () => {
     return request(app.getHttpServer())
       .post("/api/auth/signin")
       .send(newUser)
@@ -53,8 +55,7 @@ describe("User [end-to-end]", () => {
       });
   });
 
-  // register already been
-  it("- POST USER signup", async () => {
+  it("- POST USER signup (already registered)", async () => {
     const repository: Repository<User> = getConnection(process.env.DB_NAME).getRepository(User);
     const userRepeat = await repository.findOne({
       where: { email: newUser.email },
@@ -73,7 +74,7 @@ describe("User [end-to-end]", () => {
   it("+ GET USER Info", async () => {
     return request(app.getHttpServer())
       .get("/api/auth/info")
-      .set("Authorization", `Bearer ${newToken as string}`)
+      .set("Authorization", `Bearer ${newToken}`)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.OK);
         expect(isInstanceOfUserDto(await response.body)).toBeTruthy();
@@ -84,8 +85,7 @@ describe("User [end-to-end]", () => {
       });
   });
 
-  // wrong token
-  it("- GET USER Info (wrong token)", async () => {
+  it("- GET USER Info (invalid token)", async () => {
     return request(app.getHttpServer())
       .get("/api/auth/info")
       .set("Authorization", `Bearer ${fakeToken}`)
@@ -97,7 +97,6 @@ describe("User [end-to-end]", () => {
       });
   });
 
-  // no token
   it("- GET USER Info (no token)", async () => {
     return request(app.getHttpServer())
       .get("/api/auth/info")
@@ -106,6 +105,34 @@ describe("User [end-to-end]", () => {
         expect(isInstanceOfError(await response.body)).toBeTruthy();
         const errMsg = <IErrorRequest>response.body;
         expect(errMsg.message).toBe("No headers.authorization");
+      });
+  });
+
+  it("+ GET USER Info (update token)", async () => {
+    const tokenRepo: Repository<Token> = getConnection(process.env.DB_NAME).getRepository(Token);
+    const tokenService = new TokenService(tokenRepo);
+
+    const currentToken = await tokenRepo.findOne({
+      where: { refreshToken: newToken },
+    });
+    await tokenRepo.query(
+      `UPDATE public."token" SET "expiresIn"='${dayAgo}' WHERE "id"='${currentToken.id}'`
+    );
+    const expiredToken = await tokenRepo.findOne({
+      where: { id: currentToken.id },
+    });
+
+    return request(app.getHttpServer())
+      .get("/api/auth/info")
+      .set("Authorization", `Bearer ${expiredToken.refreshToken}`)
+      .then(async function (response) {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(isInstanceOfUserDto(await response.body)).toBeTruthy();
+        const actualToken = await tokenService.getTokenByUser(<User>response.body);
+        expect(actualToken.id).not.toEqual(expiredToken.id);
+        expect(actualToken.accessToken).toEqual(expiredToken.accessToken);
+        expect(actualToken.refreshToken).not.toEqual(expiredToken.refreshToken);
+        expect(actualToken.expiresIn > expiredToken.expiresIn).toBeTruthy();
       });
   });
 

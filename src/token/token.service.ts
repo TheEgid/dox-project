@@ -7,7 +7,7 @@ import UserDto from "../user/user.dto";
 import Token from "./token.entity";
 
 @Injectable()
-export default class UserService {
+export default class TokenService {
   constructor(
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>

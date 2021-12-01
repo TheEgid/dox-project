@@ -71,7 +71,7 @@ export default class UserService {
     return undefined;
   }
 
-  async getUserByToken(refreshToken: string): Promise<User | undefined> {
+  async getUserByToken(refreshToken: string): Promise<UserDto | undefined> {
     return this.userRepository
       .createQueryBuilder("user")
       .leftJoinAndSelect("token", "token", "token.userId = user.id")
