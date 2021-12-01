@@ -1,17 +1,19 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { getConnection, Repository } from "typeorm";
 import request from "supertest";
-import { finalizeAfter, initializeBefore } from "./fixture.common";
+import { finalizeAfter, initializeBefore, IerrorRequest } from "./fixture.common";
 import TokenDto from "../src/token/token.dto";
 import User from "../src/user/user.entity";
 
-interface IerrJson {
-  statusCode: number;
-  message: string;
-  error: string;
-}
+const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
+const isInstanceOfError = (object: any): object is IerrorRequest => "error" in object;
 
-const isInstanceOfErrorJson = (object: any): object is IerrJson => "error" in object;
+const newUser = {
+  email: "mocktestusert@mocktestemail.com",
+  hashedPassword: "mocktestpassword",
+};
+
+let newToken;
 
 describe("User [end-to-end]", () => {
   let app: INestApplication;
@@ -19,15 +21,6 @@ describe("User [end-to-end]", () => {
   beforeAll(async () => {
     app = await initializeBefore();
   });
-
-  const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
-
-  const newUser = {
-    email: "mocktestusert@mocktestemail.com",
-    hashedPassword: "mocktestpassword",
-  };
-
-  let newToken;
 
   // register
   it("positive POST USER signup", async () => {
@@ -59,15 +52,15 @@ describe("User [end-to-end]", () => {
   it("negative POST USER signup", async () => {
     const repository: Repository<User> = getConnection(process.env.DB_NAME).getRepository(User);
     const userRepeat = await repository.findOne({
-      where: { email: "mocktestusert@mocktestemail.com" },
+      where: { email: newUser.email },
     });
     return request(app.getHttpServer())
       .post("/api/auth/signup")
       .send(newUser)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.NOT_ACCEPTABLE);
-        expect(isInstanceOfErrorJson(await response.body)).toBeTruthy();
-        const errMsg = <IerrJson>response.body;
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IerrorRequest>response.body;
         expect(errMsg.message).toBe(`Already signup as ${userRepeat.email}`);
       });
   });

@@ -4,6 +4,12 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { configConnection, connectionOptions } from "../src/database/database.config";
 import AppModule from "../src/app.module";
 
+export interface IerrorRequest {
+  statusCode: number;
+  message: string;
+  error: string;
+}
+
 const databaseStringAccidentCheck = () => {
   if (process.env.DB_NAME !== "doc-flow-test") {
     throw new Error(`The test database ${process.env.DB_NAME} is the same as the main database.`);

@@ -2,21 +2,15 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 import * as fs from "fs";
 import path from "path";
 import request from "supertest";
-import { initializeBefore } from "./fixture.common";
+import { IerrorRequest, initializeBefore } from "./fixture.common";
 
-interface IerrJson {
-  statusCode: number;
-  message: string;
-  error: string;
-}
-
-interface IssuccessJson {
+interface Isuccess {
   docxPath: string;
   fileContent: string;
 }
 
-const isInstanceOfSuccessJson = (object: any): object is IssuccessJson => "fileContent" in object;
-const isInstanceOfErrorJson = (object: any): object is IerrJson => "error" in object;
+const isInstanceOfSuccess = (object: any): object is Isuccess => "fileContent" in object;
+const isInstanceOfError = (object: any): object is IerrorRequest => "error" in object;
 
 describe("Upload PDF File [end-to-end]", () => {
   let app: INestApplication;
@@ -34,9 +28,9 @@ describe("Upload PDF File [end-to-end]", () => {
       .attach("customfile", filePath)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.CREATED);
-        expect(isInstanceOfSuccessJson(await response.body)).toBeTruthy();
+        expect(isInstanceOfSuccess(await response.body)).toBeTruthy();
 
-        const jsonContent = <IssuccessJson>response.body;
+        const jsonContent = <Isuccess>response.body;
         expect(jsonContent.docxPath.endsWith("docx")).toBeTruthy();
         expect(jsonContent.fileContent.length !== 0).toBeTruthy();
         expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
@@ -52,8 +46,8 @@ describe("Upload PDF File [end-to-end]", () => {
       .attach("customfile", filePath)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-        expect(isInstanceOfErrorJson(await response.body)).toBeTruthy();
-        const errMsg = <IerrJson>response.body;
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IerrorRequest>response.body;
         expect(errMsg.message).toBe("only .pdf format allowed");
       });
   });
