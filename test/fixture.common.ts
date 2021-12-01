@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { configConnection, connectionOptions } from "../src/database/database.config";
 import AppModule from "../src/app.module";
 
-export interface IerrorRequest {
+export interface IErrorRequest {
   statusCode: number;
   message: string;
   error: string;

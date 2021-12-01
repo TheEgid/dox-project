@@ -18,31 +18,42 @@ export default class UserService {
   };
 
   async getTokenByUser(user: UserDto): Promise<TokenDto> {
-    return this.tokenRepository
-      .createQueryBuilder("token")
-      .leftJoinAndSelect("user", "user", "token.userId = user.id")
-      .where("user.id = :1", { 1: user.id })
-      .orderBy("token.expiresIn", "DESC")
-      .getOne();
+    try {
+      return await this.tokenRepository
+        .createQueryBuilder("token")
+        .leftJoinAndSelect("user", "user", "token.userId = user.id")
+        .where("user.id = :1", { 1: user.id })
+        .orderBy("token.expiresIn", "DESC")
+        .getOne();
+    } catch (error) {
+      return undefined;
+    }
   }
 
   async updateToken(user: UserDto): Promise<TokenDto | undefined> {
     const checkedToken = await this.getTokenByUser(user);
-    if (!(checkedToken instanceof TokenDto && Date.now() < Date.parse(checkedToken.expiresIn))) {
+    if (!(checkedToken instanceof TokenDto)) {
+      return undefined;
+    }
+    if (Date.now() > Date.parse(checkedToken.expiresIn)) {
       return this.setToken(user, checkedToken.accessToken);
     }
     return checkedToken;
   }
 
   async setToken(user: UserDto, oldAccessToken?: string): Promise<TokenDto> {
-    const tokenDto: TokenDto = {
-      id: new uuid().id,
-      accessToken: oldAccessToken ? oldAccessToken : new uuid().id,
-      refreshToken: new uuid().id,
-      expiresIn: this.addSomeDays(2),
-      userId: user,
-    };
-    await this.tokenRepository.save(tokenDto);
-    return this.tokenRepository.findOne(tokenDto.id);
+    try {
+      const tokenDto: TokenDto = {
+        id: new uuid().id,
+        accessToken: oldAccessToken ? oldAccessToken : new uuid().id,
+        refreshToken: new uuid().id,
+        expiresIn: this.addSomeDays(2),
+        userId: user,
+      };
+      await this.tokenRepository.save(tokenDto);
+      return await this.tokenRepository.findOne(tokenDto.id);
+    } catch (error) {
+      return undefined;
+    }
   }
 }

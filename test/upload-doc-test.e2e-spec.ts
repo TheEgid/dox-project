@@ -2,15 +2,15 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 import * as fs from "fs";
 import path from "path";
 import request from "supertest";
-import { IerrorRequest, initializeBefore } from "./fixture.common";
+import { IErrorRequest, initializeBefore } from "./fixture.common";
 
-interface Isuccess {
+interface ISuccess {
   docxPath: string;
   fileContent: string;
 }
 
-const isInstanceOfSuccess = (object: any): object is Isuccess => "fileContent" in object;
-const isInstanceOfError = (object: any): object is IerrorRequest => "error" in object;
+const isInstanceOfSuccess = (object: any): object is ISuccess => "fileContent" in object;
+const isInstanceOfError = (object: any): object is IErrorRequest => "error" in object;
 
 describe("Upload PDF File [end-to-end]", () => {
   let app: INestApplication;
@@ -30,7 +30,7 @@ describe("Upload PDF File [end-to-end]", () => {
         expect(response.status).toBe(HttpStatus.CREATED);
         expect(isInstanceOfSuccess(await response.body)).toBeTruthy();
 
-        const jsonContent = <Isuccess>response.body;
+        const jsonContent = <ISuccess>response.body;
         expect(jsonContent.docxPath.endsWith("docx")).toBeTruthy();
         expect(jsonContent.fileContent.length !== 0).toBeTruthy();
         expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
@@ -47,7 +47,7 @@ describe("Upload PDF File [end-to-end]", () => {
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         expect(isInstanceOfError(await response.body)).toBeTruthy();
-        const errMsg = <IerrorRequest>response.body;
+        const errMsg = <IErrorRequest>response.body;
         expect(errMsg.message).toBe("only .pdf format allowed");
       });
   });

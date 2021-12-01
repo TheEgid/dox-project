@@ -18,8 +18,8 @@ export default class UserModule implements NestModule {
     consumer
       .apply(AuthMiddleware)
       .forRoutes(
-        { path: "/api/logout", method: RequestMethod.GET },
-        { path: "/api/info", method: RequestMethod.GET }
+        { path: "auth/logout", method: RequestMethod.GET },
+        { path: "auth/info", method: RequestMethod.GET }
       );
   }
 }

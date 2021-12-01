@@ -68,7 +68,7 @@ export default class UserService {
       const [, token] = req.headers.authorization.split(" ", 2);
       return this.getUserByToken(token);
     }
-    return null;
+    return undefined;
   }
 
   async getUserByToken(refreshToken: string): Promise<UserDto> {

@@ -1,12 +1,12 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { getConnection, Repository } from "typeorm";
 import request from "supertest";
-import { finalizeAfter, initializeBefore, IerrorRequest } from "./fixture.common";
+import { finalizeAfter, initializeBefore, IErrorRequest } from "./fixture.common";
 import TokenDto from "../src/token/token.dto";
 import User from "../src/user/user.entity";
 
 const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
-const isInstanceOfError = (object: any): object is IerrorRequest => "error" in object;
+const isInstanceOfError = (object: any): object is IErrorRequest => "error" in object;
 
 const newUser = {
   email: "mocktestusert@mocktestemail.com",
@@ -60,7 +60,7 @@ describe("User [end-to-end]", () => {
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.NOT_ACCEPTABLE);
         expect(isInstanceOfError(await response.body)).toBeTruthy();
-        const errMsg = <IerrorRequest>response.body;
+        const errMsg = <IErrorRequest>response.body;
         expect(errMsg.message).toBe(`Already signup as ${userRepeat.email}`);
       });
   });

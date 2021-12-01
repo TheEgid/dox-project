@@ -1,23 +1,24 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { getConnection, Repository } from "typeorm";
+import { UUIDv4 as uuid } from "uuid-v4-validator";
 import request from "supertest";
 import argon2 from "argon2";
-import { finalizeAfter, IerrorRequest, initializeBefore } from "./fixture.common";
+import { finalizeAfter, IErrorRequest, initializeBefore } from "./fixture.common";
 import TokenDto from "../src/token/token.dto";
 import User from "../src/user/user.entity";
 import UserDto from "../src/user/user.dto";
 
 const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
 const isInstanceOfUserDto = (object: any): object is UserDto => "hashedPassword" in object;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const isInstanceOfError = (object: any): object is IerrorRequest => "error" in object;
+const isInstanceOfError = (object: any): object is IErrorRequest => "error" in object;
 
 const newAdmin = {
   email: "mocktestadmin@mocktestemail.com",
-  hashedPassword: "mocktestpassword",
+  hashedPassword: "mocktestadminpassword",
 };
 
 let newToken;
+const fakeToken = new uuid().id;
 
 describe("Admin [end-to-end]", () => {
   let app: INestApplication;
@@ -70,31 +71,30 @@ describe("Admin [end-to-end]", () => {
       });
   });
 
-  // {
-  //   id: 'ddc8c155-5b6b-4433-900b-0eeb8829d3d9',
-  //     email: 'mocktestadmin@mocktestemail.com',
-  //   hashedPassword: 'MotI4566hqfsRy+E',
-  //   createdAt: '2021-12-01T08:37:22.363Z',
-  //   isActive: true,
-  //   isAdmin: true
-  // }
+  // wrong token
+  it("negative wrong token admin GET Info", async () => {
+    return request(app.getHttpServer())
+      .get("/api/auth/info")
+      .set("Authorization", `Bearer ${fakeToken}`)
+      .then(async function (response) {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IErrorRequest>response.body;
+        expect(errMsg.message).toBe("Wrong headers.authorization");
+      });
+  });
 
-  // // register already been
-  // it("negative POST USER signup", async () => {
-  //   const repository: Repository<User> = getConnection(process.env.DB_NAME).getRepository(User);
-  //   const userRepeat = await repository.findOne({
-  //     where: { email: newUser.email },
-  //   });
-  //   return request(app.getHttpServer())
-  //     .post("/api/auth/signup")
-  //     .send(newUser)
-  //     .then(async (response) => {
-  //       expect(response.status).toBe(HttpStatus.NOT_ACCEPTABLE);
-  //       expect(isInstanceOfError(await response.body)).toBeTruthy();
-  //       const errMsg = <IerrorRequest>response.body;
-  //       expect(errMsg.message).toBe(`Already signup as ${userRepeat.email}`);
-  //     });
-  // });
+  // no token
+  it("negative no token admin GET Info", async () => {
+    return request(app.getHttpServer())
+      .get("/api/auth/info")
+      .then(async function (response) {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IErrorRequest>response.body;
+        expect(errMsg.message).toBe("No headers.authorization");
+      });
+  });
 
   afterAll(async () => {
     await finalizeAfter("User");
