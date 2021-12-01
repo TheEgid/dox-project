@@ -1,16 +1,14 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { getConnection, Repository } from "typeorm";
-import { UUIDv4 as uuid } from "uuid-v4-validator";
 import request from "supertest";
 import argon2 from "argon2";
-import { finalizeAfter, IErrorRequest, initializeBefore } from "./fixture.common";
+import { finalizeAfter, initializeBefore } from "./fixture.common";
 import TokenDto from "../src/token/token.dto";
 import User from "../src/user/user.entity";
 import UserDto from "../src/user/user.dto";
 
-const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
 const isInstanceOfUserDto = (object: any): object is UserDto => "hashedPassword" in object;
-const isInstanceOfError = (object: any): object is IErrorRequest => "error" in object;
+const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
 
 const newAdmin = {
   email: "mocktestadmin@mocktestemail.com",
@@ -18,7 +16,6 @@ const newAdmin = {
 };
 
 let newToken;
-const fakeToken = new uuid().id;
 
 describe("Admin [end-to-end]", () => {
   let app: INestApplication;
@@ -28,7 +25,7 @@ describe("Admin [end-to-end]", () => {
   });
 
   // register
-  it("set admin POST USER signup", async () => {
+  it("+ POST ADMIN signup", async () => {
     return request(app.getHttpServer())
       .post("/api/auth/signup")
       .send(newAdmin)
@@ -45,7 +42,7 @@ describe("Admin [end-to-end]", () => {
   });
 
   // enter
-  it("positive admin POST USER signin", async () => {
+  it("+ POST ADMIN USER signin", async () => {
     return request(app.getHttpServer())
       .post("/api/auth/signin")
       .send(newAdmin)
@@ -57,7 +54,7 @@ describe("Admin [end-to-end]", () => {
       });
   });
 
-  it("positive admin GET Info", async () => {
+  it("+ POST ADMIN GET Info", async () => {
     return request(app.getHttpServer())
       .get("/api/auth/info")
       .set("Authorization", `Bearer ${newToken as string}`)
@@ -70,32 +67,6 @@ describe("Admin [end-to-end]", () => {
         expect(infoUser.isAdmin).toBeTruthy();
       });
   });
-
-  // wrong token
-  it("negative wrong token admin GET Info", async () => {
-    return request(app.getHttpServer())
-      .get("/api/auth/info")
-      .set("Authorization", `Bearer ${fakeToken}`)
-      .then(async function (response) {
-        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-        expect(isInstanceOfError(await response.body)).toBeTruthy();
-        const errMsg = <IErrorRequest>response.body;
-        expect(errMsg.message).toBe("Wrong headers.authorization");
-      });
-  });
-
-  // no token
-  it("negative no token admin GET Info", async () => {
-    return request(app.getHttpServer())
-      .get("/api/auth/info")
-      .then(async function (response) {
-        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-        expect(isInstanceOfError(await response.body)).toBeTruthy();
-        const errMsg = <IErrorRequest>response.body;
-        expect(errMsg.message).toBe("No headers.authorization");
-      });
-  });
-
   afterAll(async () => {
     await finalizeAfter("User");
   });

@@ -12,7 +12,9 @@ export interface IErrorRequest {
 
 const databaseStringAccidentCheck = () => {
   if (process.env.DB_NAME !== "doc-flow-test") {
-    throw new Error(`The test database ${process.env.DB_NAME} is the same as the main database.`);
+    throw new Error(
+      `The test database ${String(process.env.DB_NAME)} is the same as the main database.`
+    );
   }
 };
 

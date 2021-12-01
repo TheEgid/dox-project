@@ -17,7 +17,7 @@ export default class UserService {
     return new Date(new Date().getTime() + 86400000 * days).toISOString(); // + days in ms;
   };
 
-  async getTokenByUser(user: UserDto): Promise<TokenDto> {
+  async getTokenByUser(user: UserDto): Promise<Token | undefined> {
     try {
       return await this.tokenRepository
         .createQueryBuilder("token")
@@ -41,7 +41,7 @@ export default class UserService {
     return checkedToken;
   }
 
-  async setToken(user: UserDto, oldAccessToken?: string): Promise<TokenDto> {
+  async setToken(user: UserDto, oldAccessToken?: string): Promise<Token | undefined> {
     try {
       const tokenDto: TokenDto = {
         id: new uuid().id,

@@ -12,7 +12,7 @@ async function bootstrap() {
 
 bootstrap()
   .then(() => {
-    Logger.log(`[Info] ➤ port:${port} ⚙ ${process.env.APP_ENV} ⚙ environment`);
+    Logger.log(`[Info] ➤ port:${port} ⚙ ${String(process.env.APP_ENV)} ⚙ environment`);
   })
   .catch((error) => {
     Logger.error("[Error] ➤ ".concat(error as string));

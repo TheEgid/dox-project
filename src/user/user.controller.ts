@@ -52,7 +52,7 @@ export default class UserController {
   }
 
   @Get("info")
-  async getUserInfo(@Req() req: Request): Promise<UserDto> {
+  async getUserInfo(@Req() req: Request): Promise<UserDto | undefined> {
     const infoUser = await this.userService.getUserInfo(req);
     if (infoUser instanceof UserDto) {
       return infoUser;

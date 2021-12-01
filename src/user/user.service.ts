@@ -20,7 +20,7 @@ export default class UserService {
   ) {}
 
   // Регистрация
-  async userSignup(newUser: UserDto): Promise<TokenDto> {
+  async userSignup(newUser: UserDto): Promise<TokenDto | undefined> {
     const userRepeat = await this.userRepository.findOne({
       where: { email: newUser.email },
     });
@@ -34,7 +34,7 @@ export default class UserService {
   }
 
   // Вход
-  async userSignin(user: UserDto): Promise<TokenDto> {
+  async userSignin(user: UserDto): Promise<TokenDto | undefined> {
     const oldUser = await this.userRepository.findOne({
       where: { email: user.email },
     });
@@ -48,7 +48,7 @@ export default class UserService {
     return this.tokenService.updateToken(oldUser);
   }
 
-  async userLogout(req: Request): Promise<void> {
+  async userLogout(req: Request): Promise<void | undefined> {
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
       const removedToken = await this.tokenRepository.findOne({
@@ -63,7 +63,7 @@ export default class UserService {
     }
   }
 
-  async getUserInfo(req: Request): Promise<UserDto> {
+  async getUserInfo(req: Request): Promise<UserDto | undefined> {
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
       return this.getUserByToken(token);
@@ -71,7 +71,7 @@ export default class UserService {
     return undefined;
   }
 
-  async getUserByToken(refreshToken: string): Promise<UserDto> {
+  async getUserByToken(refreshToken: string): Promise<User | undefined> {
     return this.userRepository
       .createQueryBuilder("user")
       .leftJoinAndSelect("token", "token", "token.userId = user.id")
