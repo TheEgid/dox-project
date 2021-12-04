@@ -26,7 +26,18 @@ export default class UploadDocController {
         HttpStatus.UNSUPPORTED_MEDIA_TYPE
       );
     }
-    const processed = await this.uploadDocService.getfileProcess(file.path);
-    return <string>JSON.parse(processed.stdout);
+    const tempProcessed = await this.uploadDocService.getfileProcess(file.path);
+    const processed = tempProcessed.stdout;
+    if (processed.includes("Error")) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          message: "Content Error",
+          error: "UNPROCESSABLE_ENTITY",
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY
+      );
+    }
+    return <string>JSON.parse(processed);
   }
 }

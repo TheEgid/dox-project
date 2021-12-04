@@ -1,17 +1,26 @@
 import * as sinon from "sinon";
+import { Repository } from "typeorm";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import DocumentService from "../src/document/document.service";
 import Document from "../src/document/document.entity";
-import { DocumentDto } from "../src/document/document.dto";
+import DocumentService from "../src/document/document.service";
+import { UpdateDocumentDto } from "../src/document/document.dto";
 
-describe("DocumentService", () => {
+describe("Document SinonSandbox", () => {
   let documentService: DocumentService;
-  let sandbox: sinon.SinonSandbox;
+  let sinonSandbox: sinon.SinonSandbox;
+
+  const documentOneObject: UpdateDocumentDto = {
+    id: 1,
+    userHiddenName: "test",
+    createdAt: new Date(),
+    filename: "test",
+    content: "test",
+    docType: "test",
+  };
 
   beforeAll(async () => {
-    sandbox = sinon.createSandbox();
+    sinonSandbox = sinon.createSandbox();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DocumentService,
@@ -24,15 +33,38 @@ describe("DocumentService", () => {
     documentService = module.get<DocumentService>(DocumentService);
   });
 
-  it("should call saveDocument", async () => {
-    const createDocumentSpy = jest.spyOn(documentService, "createDocument");
-    const dto = new DocumentDto();
-    await documentService.createDocument(dto);
-    expect(createDocumentSpy).toHaveBeenCalledWith(dto);
+  it("documentService.createDocument", async () => {
+    const spy = jest.spyOn(documentService, "createDocument");
+    await documentService.createDocument(documentOneObject);
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining(documentOneObject));
+  });
+
+  it("documentService.updateDocument", async () => {
+    const spy = jest.spyOn(documentService, "updateDocument");
+    await documentService.updateDocument(documentOneObject);
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining(documentOneObject));
+  });
+
+  it("documentService.getDocumentById", async () => {
+    const spy = jest.spyOn(documentService, "getDocumentById");
+    await documentService.getDocumentById(documentOneObject.id);
+    expect(spy).toHaveBeenCalledWith(1);
+  });
+
+  it("documentService.getAllDocument", async () => {
+    const spy = jest.spyOn(documentService, "getAllDocument");
+    await documentService.getAllDocument();
+    expect(spy).toHaveBeenCalledWith();
+  });
+
+  it("documentService.deleteDocument", async () => {
+    const spy = jest.spyOn(documentService, "deleteDocument");
+    await documentService.deleteDocument(documentOneObject.id);
+    expect(spy).toHaveBeenCalledWith(1);
   });
 
   afterAll((done) => {
-    sandbox.restore();
+    sinonSandbox.restore();
     done();
   });
 });

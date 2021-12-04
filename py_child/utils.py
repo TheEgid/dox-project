@@ -58,7 +58,7 @@ def delete_bad_files(in_filepath):
     check3 = not is_small_file_by_bytes(in_filepath)
     if any([check1, check2, check3]):
         os.remove(in_filepath)
-        return
+        return None
     return in_filepath
 
 

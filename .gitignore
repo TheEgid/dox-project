@@ -147,3 +147,4 @@ MANIFEST
 !/UPLOAD/.gitkeep
 
 *.rar
+/test/testFiles/sampleBig.pdf

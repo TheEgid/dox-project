@@ -48,7 +48,7 @@ export default class UserService {
     return this.tokenService.updateToken(oldUser);
   }
 
-  async userLogout(req: Request): Promise<void | undefined> {
+  async userLogout(req: Request): Promise<string | undefined> {
     if (req.get(process.env.HEADER_AUTH)) {
       const [, token] = req.headers.authorization.split(" ", 2);
       const removedToken = await this.tokenRepository.findOne({
@@ -57,7 +57,7 @@ export default class UserService {
       if (!(removedToken instanceof TokenDto)) {
         return undefined;
       }
-      await this.tokenRepository.remove([removedToken]);
+      return this.tokenService.zeroizeToken(removedToken);
     } else {
       return undefined;
     }

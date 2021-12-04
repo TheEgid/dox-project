@@ -60,7 +60,7 @@ export default class UserController {
     throw new HttpException(
       {
         statusCode: HttpStatus.NO_CONTENT,
-        message: "Error user info",
+        message: "User info Error",
         error: "NO_CONTENT",
       },
       HttpStatus.NO_CONTENT
@@ -69,6 +69,16 @@ export default class UserController {
 
   @Get("logout")
   async userLogout(@Req() req: Request): Promise<void> {
-    await this.userService.userLogout(req);
+    const check = await this.userService.userLogout(req);
+    if (check === undefined) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: "Logout token Error",
+          error: "UNAUTHORIZED",
+        },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
   }
 }

@@ -136,6 +136,47 @@ describe("User [end-to-end]", () => {
       });
   });
 
+  it("+ GET USER logout (exit)", async () => {
+    const tokenRepo: Repository<Token> = getConnection(process.env.DB_NAME).getRepository(Token);
+    const delToken = await tokenRepo.findOne({ where: { refreshToken: newToken } });
+
+    return request(app.getHttpServer())
+      .get("/api/auth/logout")
+      .set("Authorization", `Bearer ${newToken}`)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(response.body).toEqual({});
+        expect(response.body).not.toBeUndefined();
+
+        const expToken = await tokenRepo.findOne({ where: { id: delToken.id } });
+        expect(expToken.refreshToken).toBeNull();
+      });
+  });
+
+  it("- GET USER logout (repeated)", async () => {
+    return request(app.getHttpServer())
+      .get("/api/auth/logout")
+      .set("Authorization", `Bearer ${newToken}`)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IErrorRequest>response.body;
+        expect(errMsg.message).toBe("Wrong headers.authorization");
+      });
+  });
+
+  it("- GET USER Info (already logout)", async () => {
+    return request(app.getHttpServer())
+      .get("/api/auth/info")
+      .set("Authorization", `Bearer ${newToken}`)
+      .then(async function (response) {
+        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IErrorRequest>response.body;
+        expect(errMsg.message).toBe("Wrong headers.authorization");
+      });
+  });
+
   afterAll(async () => {
     await finalizeAfter("User");
   });

@@ -42,7 +42,7 @@ describe("Admin [end-to-end]", () => {
   });
 
   // enter
-  it("+ POST ADMIN USER signin", async () => {
+  it("+ POST ADMIN signin", async () => {
     return request(app.getHttpServer())
       .post("/api/auth/signin")
       .send(newAdmin)
@@ -54,7 +54,7 @@ describe("Admin [end-to-end]", () => {
       });
   });
 
-  it("+ POST ADMIN GET Info", async () => {
+  it("+ GET ADMIN Info", async () => {
     return request(app.getHttpServer())
       .get("/api/auth/info")
       .set("Authorization", `Bearer ${newToken as string}`)

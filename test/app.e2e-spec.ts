@@ -10,7 +10,7 @@ describe("Root [end-to-end]", () => {
     app = await initializeBefore();
   });
 
-  it("GET status", async () => {
+  it("+ GET status", async () => {
     return request(app.getHttpServer())
       .get("/api/status")
       .then((response) => {
@@ -19,7 +19,7 @@ describe("Root [end-to-end]", () => {
       });
   });
 
-  it("POST document/create", async () => {
+  it("+ POST document/create", async () => {
     const isDocumentDto = (object): object is DocumentDto => !!object && "id" in object;
     return request(app.getHttpServer())
       .post("/api/document/create")
