@@ -145,11 +145,13 @@ describe("User [end-to-end]", () => {
       .set("Authorization", `Bearer ${newToken}`)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.OK);
-        expect(response.body).toEqual({});
-        expect(response.body).not.toBeUndefined();
-
+        expect(isInstanceOfTokenDto(await response.body)).toBeTruthy();
+        const jsonContent = <TokenDto>response.body;
+        const zeroToken = jsonContent.refreshToken;
+        expect(zeroToken).toBeNull();
         const expToken = await tokenRepo.findOne({ where: { id: delToken.id } });
         expect(expToken.refreshToken).toBeNull();
+        expect(expToken.id).toEqual(jsonContent.id);
       });
   });
 

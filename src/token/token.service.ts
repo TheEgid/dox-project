@@ -57,10 +57,9 @@ export default class TokenService {
     }
   }
 
-  async zeroizeToken(checkedToken: TokenDto): Promise<string | undefined> {
+  async zeroizeToken(checkedToken: TokenDto): Promise<TokenDto | undefined> {
     try {
-      await this.tokenRepository.save(Object.assign(checkedToken, { refreshToken: null }));
-      return "";
+      return await this.tokenRepository.save(Object.assign(checkedToken, { refreshToken: null }));
     } catch (error) {
       return undefined;
     }

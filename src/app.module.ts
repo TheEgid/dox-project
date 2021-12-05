@@ -1,5 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { AppLoggerMiddleware, HealthcheckMiddleware } from "./app.middleware";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import NotFoundInterceptor from "./app.interceptor";
 import AppController from "./app.controller";
 import AppService from "./app.service";
 import TokenModule from "./token/token.module";
@@ -12,7 +14,7 @@ import UploadDocModule from "./uploadDoc/uploadDoc.module";
 @Module({
   imports: [UploadDocModule, DataBaseModule, UserModule, TokenModule, AdminModule, DocumentModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_INTERCEPTOR, useClass: NotFoundInterceptor }],
 })
 export default class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

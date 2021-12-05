@@ -68,9 +68,9 @@ export default class UserController {
   }
 
   @Get("logout")
-  async userLogout(@Req() req: Request): Promise<void> {
-    const check = await this.userService.userLogout(req);
-    if (check === undefined) {
+  async userLogout(@Req() req: Request): Promise<TokenDto | undefined> {
+    const zeroToken = await this.userService.userLogout(req);
+    if (zeroToken === undefined) {
       throw new HttpException(
         {
           statusCode: HttpStatus.UNAUTHORIZED,
@@ -80,5 +80,6 @@ export default class UserController {
         HttpStatus.UNAUTHORIZED
       );
     }
+    return zeroToken;
   }
 }

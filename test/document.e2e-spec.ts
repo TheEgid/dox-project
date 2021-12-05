@@ -1,7 +1,7 @@
 import Document from "../src/document/document.entity";
 import { DocumentDto, UpdateDocumentDto } from "../src/document/document.dto";
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { finalizeAfter, initializeBefore } from "./fixture.common";
+import { finalizeAfter, IErrorRequest, initializeBefore } from "./fixture.common";
 import request from "supertest";
 import { getConnection, Repository } from "typeorm";
 
@@ -14,6 +14,7 @@ const documentOneObject: DocumentDto = {
 };
 
 const isInstanceOfDocumentDto = (object: any): object is DocumentDto => "content" in object;
+const isInstanceOfError = (object: any): object is IErrorRequest => "error" in object;
 
 describe("Document [end-to-end]", () => {
   let app: INestApplication;
@@ -42,7 +43,7 @@ describe("Document [end-to-end]", () => {
       });
   });
 
-  it("+ GET document/get", async () => {
+  it("+ GET document/get:id", async () => {
     return request(app.getHttpServer())
       .get(`/api/document/get/${documentOneObjectId}`)
       .then(async (response) => {
@@ -53,24 +54,16 @@ describe("Document [end-to-end]", () => {
       });
   });
 
-  it("- GET document/get", async () => {
-    return (
-      request(app.getHttpServer())
-        .get(`/api/document/get/${documentOneObjectId * 200}`)
-        // eslint-disable-next-line @typescript-eslint/require-await
-        .then(async (response) => {
-          expect(response.status).toBe(HttpStatus.OK);
-          expect(isInstanceOfDocumentDto(await response.body)).toBeFalsy();
-          const jsonContent = <UpdateDocumentDto>response.body;
-          expect(jsonContent).toBeUndefined();
-          // const createdDocument = await documentRepo.findOne({
-          //   order: { createdAt: "DESC" },
-          // });
-          // expect(createdDocument.filename).toBe(documentOneObject.filename);
-          // documentOneObjectId = createdDocument.id;
-          console.log(jsonContent);
-        })
-    );
+  it("- GET document/get:id", async () => {
+    return request(app.getHttpServer())
+      .get(`/api/document/get/${documentOneObjectId * 200}`)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.NOT_FOUND);
+        expect(isInstanceOfDocumentDto(await response.body)).toBeFalsy();
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IErrorRequest>response.body;
+        expect(errMsg.message).toBe("NOT_FOUND Error");
+      });
   });
 
   afterAll(async () => {
