@@ -1,7 +1,7 @@
 export class DocumentDto {
   readonly userHiddenName: string;
 
-  readonly createdAt: Date;
+  readonly createdAt?: Date;
 
   updatedAt?: Date;
 

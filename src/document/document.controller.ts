@@ -24,6 +24,9 @@ export default class DocumentController {
   @Put("update/:id")
   async updateDocument(@Param("id") id: number, @Body() documentDto: DocumentDto) {
     const updatedDocument = await this.documentService.getDocumentById(id);
+    if (updatedDocument === undefined) {
+      return undefined;
+    }
     const updateDocumentDto = Object.assign(
       { id: updatedDocument.id, createdAt: updatedDocument.createdAt },
       documentDto
