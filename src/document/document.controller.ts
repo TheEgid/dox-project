@@ -35,7 +35,12 @@ export default class DocumentController {
   }
 
   @Delete("delete/:id")
-  async deleteDocument(@Param("id") id: number) {
-    return this.documentService.deleteDocument(id);
+  async deleteDocument(@Param("id") id: number): Promise<{ deletedId: number }> {
+    const checkDocument = await this.documentService.getDocumentById(id);
+    if (checkDocument === undefined) {
+      return undefined;
+    }
+    await this.documentService.deleteDocument(id);
+    return { deletedId: id };
   }
 }

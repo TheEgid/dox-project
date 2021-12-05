@@ -19,7 +19,7 @@ const databaseStringAccidentCheck = () => {
 };
 
 const createModuleFixture = async () => {
-  const workTestingModule = Test.createTestingModule({
+  const workTestingModule = await Test.createTestingModule({
     imports: [
       TypeOrmModule.forRoot(
         Object.assign(

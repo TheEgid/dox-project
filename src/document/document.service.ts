@@ -31,6 +31,5 @@ export default class DocumentService {
 
   async deleteDocument(id: number) {
     await this.documentRepository.delete(id);
-    return `Deleted Document with id ${id}`;
   }
 }

@@ -25,7 +25,7 @@ const isInstanceOfError = (object: any): object is IErrorRequest => "error" in o
 describe("Document [end-to-end]", () => {
   let app: INestApplication;
   let documentRepo: Repository<Document>;
-  let documentOneObjectId: number;
+  let documentId: number;
 
   beforeAll(async () => {
     app = await initializeBefore();
@@ -45,24 +45,24 @@ describe("Document [end-to-end]", () => {
           order: { createdAt: "DESC" },
         });
         expect(createdDocument.filename).toBe(docObject.filename);
-        documentOneObjectId = createdDocument.id;
+        documentId = createdDocument.id;
       });
   });
 
   it("+ GET document/get:id", async () => {
     return request(app.getHttpServer())
-      .get(`/api/document/get/${documentOneObjectId}`)
+      .get(`/api/document/get/${documentId}`)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.OK);
         expect(isInstanceOfDocumentDto(await response.body)).toBeTruthy();
         const jsonContent = <UpdateDocumentDto>response.body;
-        expect(jsonContent.id).toBe(documentOneObjectId);
+        expect(jsonContent.id).toBe(documentId);
       });
   });
 
   it("- GET document/get:id", async () => {
     return request(app.getHttpServer())
-      .get(`/api/document/get/${documentOneObjectId * 200}`)
+      .get(`/api/document/get/${documentId * 200}`)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.NOT_FOUND);
         expect(isInstanceOfDocumentDto(await response.body)).toBeFalsy();
@@ -79,21 +79,19 @@ describe("Document [end-to-end]", () => {
         expect(response.status).toBe(HttpStatus.OK);
         expect(await response.body).toBeInstanceOf(Array);
         const docs = <DocumentDto[]>response.body;
-        for (const doc of docs) {
-          expect(isInstanceOfDocumentDto(doc)).toBeTruthy();
-        }
+        docs.map((doc) => expect(isInstanceOfDocumentDto(doc)).toBeTruthy());
       });
   });
 
   it("+ PUT document/update:id", async () => {
     return request(app.getHttpServer())
-      .put(`/api/document/update/${documentOneObjectId}`)
+      .put(`/api/document/update/${documentId}`)
       .send(docUpdated)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.OK);
         expect(isInstanceOfDocumentDto(await response.body)).toBeTruthy();
         const jsonContent = <UpdateDocumentDto>response.body;
-        expect(jsonContent.id).toEqual(documentOneObjectId);
+        expect(jsonContent.id).toEqual(documentId);
         expect(jsonContent.docType).toEqual(docUpdated.docType);
         expect(jsonContent.createdAt < jsonContent.updatedAt).toBeTruthy();
       });
@@ -101,7 +99,7 @@ describe("Document [end-to-end]", () => {
 
   it("- PUT document/update:id", async () => {
     return request(app.getHttpServer())
-      .put(`/api/document/update/${documentOneObjectId * 200}`)
+      .put(`/api/document/update/${documentId * 200}`)
       .send(docUpdated)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -112,17 +110,31 @@ describe("Document [end-to-end]", () => {
       });
   });
 
+  it("+ DELETE document/delete:id", async () => {
+    return request(app.getHttpServer())
+      .delete(`/api/document/delete/${documentId}`)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.OK);
+        expect(await response.body).toStrictEqual({ deletedId: String(documentId) });
+        const deletedDocument = await documentRepo.findOne({
+          where: { id: documentId },
+        });
+        expect(deletedDocument).toBeUndefined();
+      });
+  });
+
+  it("- DELETE document/delete:id", async () => {
+    return request(app.getHttpServer())
+      .delete(`/api/document/delete/${documentId * 200}`)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.NOT_FOUND);
+        expect(isInstanceOfError(await response.body)).toBeTruthy();
+        const errMsg = <IErrorRequest>response.body;
+        expect(errMsg.message).toBe("NOT_FOUND Error");
+      });
+  });
+
   afterAll(async () => {
     await finalizeAfter("Document");
   });
 });
-
-// {
-//   id: 326,
-//     userHiddenName: 'test',
-//   createdAt: '2021-12-05T11:44:48.988Z',
-//   updatedAt: '2021-12-05T11:44:49.163Z',
-//   filename: 'test',
-//   content: 'test',
-//   docType: 'test2'
-// }
