@@ -25,9 +25,13 @@ const dayAgo = new Date(new Date().getTime() - 86400000).toISOString(); // - day
 
 describe("User [end-to-end]", () => {
   let app: INestApplication;
+  let tokenRepo: Repository<Token>;
+  let userRepo: Repository<User>;
 
   beforeAll(async () => {
     app = await initializeBefore();
+    tokenRepo = getConnection(process.env.DB_NAME).getRepository(Token);
+    userRepo = getConnection(process.env.DB_NAME).getRepository(User);
   });
 
   // register
@@ -56,8 +60,7 @@ describe("User [end-to-end]", () => {
   });
 
   it("- POST USER signup (already registered)", async () => {
-    const repository: Repository<User> = getConnection(process.env.DB_NAME).getRepository(User);
-    const userRepeat = await repository.findOne({
+    const userRepeat = await userRepo.findOne({
       where: { email: newUser.email },
     });
     return request(app.getHttpServer())
@@ -109,7 +112,6 @@ describe("User [end-to-end]", () => {
   });
 
   it("+ GET USER Info (update token)", async () => {
-    const tokenRepo: Repository<Token> = getConnection(process.env.DB_NAME).getRepository(Token);
     const tokenService = new TokenService(tokenRepo);
 
     const currentToken = await tokenRepo.findOne({
@@ -137,9 +139,7 @@ describe("User [end-to-end]", () => {
   });
 
   it("+ GET USER logout (exit)", async () => {
-    const tokenRepo: Repository<Token> = getConnection(process.env.DB_NAME).getRepository(Token);
     const delToken = await tokenRepo.findOne({ where: { refreshToken: newToken } });
-
     return request(app.getHttpServer())
       .get("/api/auth/logout")
       .set("Authorization", `Bearer ${newToken}`)
