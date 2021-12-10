@@ -1,17 +1,26 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { getConnection, Repository } from "typeorm";
-import argon2 from "argon2";
 import { UUIDv4 as uuid } from "uuid-v4-validator";
 import request from "supertest";
+import path from "path";
+import fs from "fs";
+import argon2 from "argon2";
 import { finalizeAfter, initializeBefore, IErrorRequest } from "./fixture.common";
 import TokenDto from "../src/token/token.dto";
 import User from "../src/user/user.entity";
 import UserDto from "../src/user/user.dto";
 import Token from "../src/token/token.entity";
 import TokenService from "../src/token/token.service";
+import Document from "../src/document/document.entity";
+
+interface ISuccess {
+  docxPath: string;
+  fileContent: string;
+}
 
 const isInstanceOfTokenDto = (object: any): object is TokenDto => "refreshToken" in object;
 const isInstanceOfUserDto = (object: any): object is UserDto => "hashedPassword" in object;
+const isInstanceOfSuccess = (object: any): object is ISuccess => "fileContent" in object;
 const isInstanceOfError = (object: any): object is IErrorRequest => "error" in object;
 
 const newUser = {
@@ -27,11 +36,13 @@ describe("User [end-to-end]", () => {
   let app: INestApplication;
   let tokenRepo: Repository<Token>;
   let userRepo: Repository<User>;
+  let documentRepo: Repository<Document>;
 
   beforeAll(async () => {
     app = await initializeBefore();
     tokenRepo = getConnection(process.env.DB_NAME).getRepository(Token);
     userRepo = getConnection(process.env.DB_NAME).getRepository(User);
+    documentRepo = getConnection(process.env.DB_NAME).getRepository(Document);
   });
 
   // register
@@ -71,6 +82,67 @@ describe("User [end-to-end]", () => {
         expect(isInstanceOfError(await response.body)).toBeTruthy();
         const errMsg = <IErrorRequest>response.body;
         expect(errMsg.message).toBe(`Already signup as ${userRepeat.email}`);
+      });
+  });
+
+  it("+ POST USER upload (authorized)", async () => {
+    const filePath = path.join(__dirname, "testFiles", "test upload.pdf");
+
+    if (!fs.existsSync(filePath)) throw Error(`${filePath} not exists!`);
+
+    return request(app.getHttpServer())
+      .post("/api/upload/upload")
+      .set("Authorization", `Bearer ${newToken}`)
+      .attach("customfile", filePath)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.CREATED);
+        expect(isInstanceOfSuccess(await response.body)).toBeTruthy();
+
+        const jsonContent = <ISuccess>response.body;
+
+        expect(jsonContent.docxPath.endsWith("docx")).toBeTruthy();
+        expect(jsonContent.fileContent.length !== 0).toBeTruthy();
+        expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
+        expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
+
+        const createdDocument = await documentRepo.findOne({
+          order: { createdAt: "DESC" },
+        });
+
+        expect(createdDocument.userHiddenName).toEqual("mo***********@m************.***");
+        expect(createdDocument.filename).toEqual("86e625c6.docx");
+        expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
+      });
+  });
+
+  it("- POST USER upload (authorized)", async () => {
+    const filePath = path.join(__dirname, "testFiles", "test upload.pdf");
+
+    if (!fs.existsSync(filePath)) throw Error(`${filePath} not exists!`);
+
+    return request(app.getHttpServer())
+      .post("/api/upload/upload")
+      .set("Authorization", `Bearer ${fakeToken}`)
+      .attach("customfile", filePath)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.CREATED);
+        expect(isInstanceOfSuccess(await response.body)).toBeTruthy();
+
+        const jsonContent = <ISuccess>response.body;
+
+        expect(jsonContent.docxPath.endsWith("docx")).toBeTruthy();
+        expect(jsonContent.fileContent.length !== 0).toBeTruthy();
+        expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
+        expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
+
+        const createdDocument = await documentRepo.findOne({
+          order: { createdAt: "DESC" },
+        });
+
+        expect(createdDocument.userHiddenName).toEqual("anonymous");
+        expect(createdDocument.filename).toEqual("86e625c6.docx");
+        expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
+        console.log(createdDocument.userHiddenName);
       });
   });
 

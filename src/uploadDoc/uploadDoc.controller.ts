@@ -12,6 +12,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import UserDto from "../user/user.dto";
 import UserService from "../user/user.service";
 import UploadDocService from "./uploadDoc.service";
+import TokenDto from '../token/token.dto';
 
 interface AuthHeaders {
   authorization: string;
@@ -43,8 +44,12 @@ export default class UploadDocController {
       const authorizationHeader = headers.authorization;
       const header = authorizationHeader.split(" ", 2);
       const [, inputToken] = header;
-      const curUser: UserDto = await this.userService.getUserByToken(inputToken);
-      this.currentUser = hideEmail(curUser.email);
+      const curUser = await this.userService.getUserByToken(inputToken);
+      if (curUser instanceof UserDto) {
+        this.currentUser = hideEmail(curUser.email);
+      } else {
+        this.currentUser = "anonymous";
+      }
     }
 
     if (!file) {

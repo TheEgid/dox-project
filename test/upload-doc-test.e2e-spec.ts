@@ -66,7 +66,6 @@ describe("Upload PDF File [end-to-end]", () => {
         expect(createdDocument.userHiddenName).toEqual("anonymous");
         expect(createdDocument.filename).toEqual("86e625c6.docx");
         expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
-        console.log(createdDocument);
       });
   });
 
