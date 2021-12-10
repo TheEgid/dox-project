@@ -12,7 +12,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import UserDto from "../user/user.dto";
 import UserService from "../user/user.service";
 import UploadDocService from "./uploadDoc.service";
-import TokenDto from '../token/token.dto';
+import TokenDto from "../token/token.dto";
 
 interface AuthHeaders {
   authorization: string;
