@@ -1,21 +1,52 @@
 import {
   Controller,
+  Headers,
   HttpException,
   HttpStatus,
+  Injectable,
   Post,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import UserDto from "../user/user.dto";
+import UserService from "../user/user.service";
 import UploadDocService from "./uploadDoc.service";
 
+interface AuthHeaders {
+  authorization: string;
+}
+
+const replacer = (string, pattern1: string, pattern2: string) =>
+  pattern1.concat("*".repeat(pattern2.length));
+
+const hideEmail = (email: string) =>
+  email
+    .replace(/(^.{2})(.+?)(?=@)/g, replacer)
+    .replace(/(^.+@.)(.+?)(?=\.)/g, replacer)
+    .replace(/(\.)(.+?)(?=$)/g, replacer);
+
+@Injectable()
 @Controller("upload")
 export default class UploadDocController {
-  constructor(private readonly uploadDocService: UploadDocService) {}
+  private currentUser: string;
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly uploadDocService: UploadDocService
+  ) {}
 
   @Post("upload")
   @UseInterceptors(FileInterceptor("customfile"))
-  async uploadDocument(@UploadedFile() file: Express.Multer.File) {
+  async uploadDocument(@Headers() headers: AuthHeaders, @UploadedFile() file: Express.Multer.File) {
+    if (headers.authorization) {
+      const authorizationHeader = headers.authorization;
+      const header = authorizationHeader.split(" ", 2);
+      const [, inputToken] = header;
+      const curUser: UserDto = await this.userService.getUserByToken(inputToken);
+      this.currentUser = hideEmail(curUser.email);
+    }
+
     if (!file) {
       throw new HttpException(
         {
@@ -26,8 +57,9 @@ export default class UploadDocController {
         HttpStatus.UNSUPPORTED_MEDIA_TYPE
       );
     }
-    const tempProcessed = await this.uploadDocService.getfileProcess(file.path);
-    const processed = tempProcessed.stdout;
+
+    const processed = await this.uploadDocService.getfileProcess(file.path, this.currentUser);
+
     if (processed.includes("Error")) {
       throw new HttpException(
         {

@@ -3,6 +3,8 @@ import { IErrorRequest, initializeBefore } from "./fixture.common";
 import * as fs from "fs";
 import path from "path";
 import request from "supertest";
+import { getConnection, Repository } from "typeorm";
+import Document from "../src/document/document.entity";
 
 interface ISuccess {
   docxPath: string;
@@ -31,9 +33,11 @@ const isInstanceOfError = (object: any): object is IErrorRequest => "error" in o
 
 describe("Upload PDF File [end-to-end]", () => {
   let app: INestApplication;
+  let documentRepo: Repository<Document>;
 
   beforeAll(async () => {
     app = await initializeBefore();
+    documentRepo = getConnection(process.env.DB_NAME).getRepository(Document);
   });
 
   it("+ POST upload", async () => {
@@ -54,6 +58,15 @@ describe("Upload PDF File [end-to-end]", () => {
         expect(jsonContent.fileContent.length !== 0).toBeTruthy();
         expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
         expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
+
+        const createdDocument = await documentRepo.findOne({
+          order: { createdAt: "DESC" },
+        });
+
+        expect(createdDocument.userHiddenName).toEqual("anonymous");
+        expect(createdDocument.filename).toEqual("86e625c6.docx");
+        expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
+        console.log(createdDocument);
       });
   });
 
