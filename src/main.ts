@@ -1,6 +1,15 @@
 import { NestFactory } from "@nestjs/core";
 import AppModule from "./app.module";
+import fs from "fs";
+import { config } from "dotenv";
 import { Logger } from "@nestjs/common";
+
+const { NODE_ENV } = process.env;
+if (!NODE_ENV) {
+  throw new Error("NODE_ENV required");
+}
+
+const envFile = ".env";
 
 const port = Number(process.env.SERVER_PORT);
 
@@ -12,7 +21,11 @@ async function bootstrap() {
 
 bootstrap()
   .then(() => {
-    Logger.log(`[Info] ➤ port:${port} ⚙ ${String(process.env.APP_ENV)} ⚙ environment`);
+    if (fs.existsSync(envFile)) {
+      config({ path: envFile });
+      Logger.log(`[Info] ⦁ ${envFile} loads`);
+    }
+    Logger.log(`[Info] ➤ port:${port} ⚙ ${String(process.env.NODE_ENV)} ⚙ environment`);
   })
   .catch((error) => {
     Logger.error("[Error] ➤ ".concat(error as string));

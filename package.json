@@ -7,17 +7,17 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "cross-env APP_ENV=prod nest build",
+    "build": "nest build",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "cross-env APP_ENV=prod node dist/main",
+    "start:prod": "set NODE_ENV=prod node dist/main",
     "fmt": "eslint **/*.ts --fix",
     "lint": "eslint **/*.ts --color",
-    "test": "cross-env APP_ENV=test jest --detectOpenHandles --verbose",
-    "test:watch": "cross-env APP_ENV=test jest --watch",
-    "test:cov": "cross-env APP_ENV=test jest --coverage",
-    "test:debug": "cross-env APP_ENV=test node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env APP_ENV=test jest --config ./test/jest-e2e.json"
+    "test": "set APP_ENV=test jest --detectOpenHandles --verbose",
+    "test:watch": "test jest --watch",
+    "test:cov": "test jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^8.2.3",
@@ -37,7 +37,8 @@
     "rxjs": "^7.4.0",
     "typeorm": "^0.2.41",
     "uuid-v4-validator": "^2.0.0",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "dotenv": "^10.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.1.5",
@@ -54,7 +55,6 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
-    "cross-env": "^7.0.3",
     "eslint": "^8.4.0",
     "eslint-config-airbnb-typescript": "^16.0.0",
     "eslint-config-prettier": "^8.3.0",

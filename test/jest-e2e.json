@@ -7,5 +7,6 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "detectOpenHandles": true,
-  "verbose": true
+  "verbose": true,
+  "setupFiles": ["dotenv/config"]
 }
