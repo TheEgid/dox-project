@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { AppLoggerMiddleware, HealthcheckMiddleware } from "./app.middleware";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import NotFoundInterceptor from "./app.interceptor";
@@ -11,8 +12,20 @@ import DataBaseModule from "./database/database.module";
 import DocumentModule from "./document/document.module";
 import UploadDocModule from "./uploadDoc/uploadDoc.module";
 
+const appConfigModule = ConfigModule.forRoot({
+  envFilePath: [".env"],
+});
+
 @Module({
-  imports: [UploadDocModule, DataBaseModule, UserModule, TokenModule, AdminModule, DocumentModule],
+  imports: [
+    appConfigModule,
+    UploadDocModule,
+    DataBaseModule,
+    UserModule,
+    TokenModule,
+    AdminModule,
+    DocumentModule,
+  ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_INTERCEPTOR, useClass: NotFoundInterceptor }],
 })

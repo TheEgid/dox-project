@@ -8,12 +8,12 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "start:dev": "nest start --watch",
+    "start:dev": "set NODE_ENV=dev&&nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "set NODE_ENV=prod node dist/main",
+    "start:prod": "set NODE_ENV=prod&&node dist/main",
     "fmt": "eslint **/*.ts --fix",
     "lint": "eslint **/*.ts --color",
-    "test": "set APP_ENV=test jest --detectOpenHandles --verbose",
+    "test": "jest --detectOpenHandles --verbose",
     "test:watch": "test jest --watch",
     "test:cov": "test jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -37,8 +37,7 @@
     "rxjs": "^7.4.0",
     "typeorm": "^0.2.41",
     "uuid-v4-validator": "^2.0.0",
-    "validator": "^13.7.0",
-    "dotenv": "^10.0.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.1.5",
