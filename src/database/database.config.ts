@@ -3,31 +3,44 @@ import User from "../user/user.entity";
 import Token from "../token/token.entity";
 import Document from "../document/document.entity";
 
+const dbNames = {
+  test: process.env.DB_NAME_TEST,
+  dev: process.env.DB_NAME_DEV,
+  prod: process.env.DB_NAME_PROD,
+};
+
 const envConfigure = () => {
+  process.env.DB_NAME = <string>dbNames[process.env.NODE_ENV];
   switch (process.env.NODE_ENV) {
     case "test": {
-      process.env.DB_NAME = process.env.DB_NAME_TEST;
       return {
-        name: process.env.DB_NAME_TEST,
-        url: process.env.DB_URL_TEST,
+        name: process.env.DB_NAME,
+        port: 5432,
+        username: process.env.DB_USER_TEST,
+        password: process.env.DB_PASSWORD_TEST,
+        database: process.env.DB_NAME_TEST,
         synchronize: true,
         logging: false,
       };
     }
     case "dev": {
-      process.env.DB_NAME = process.env.DB_NAME_DEV;
       return {
-        name: process.env.DB_NAME_DEV,
-        url: process.env.DB_URL_DEV,
+        name: process.env.DB_NAME,
+        port: 5432,
+        username: process.env.DB_USER_DEV,
+        password: process.env.DB_PASSWORD_DEV,
+        database: process.env.DB_NAME_DEV,
         synchronize: true,
         logging: true,
       };
     }
     case "prod": {
-      process.env.DB_NAME = process.env.DB_NAME_PROD;
       return {
-        name: process.env.DB_NAME_PROD,
-        url: process.env.DB_URL_PROD,
+        name: process.env.DB_NAME,
+        port: 5432,
+        username: process.env.DB_USER_PROD,
+        password: process.env.DB_PASSWORD_PROD,
+        database: process.env.DB_NAME_PROD,
         synchronize: false,
         logging: true,
       };
