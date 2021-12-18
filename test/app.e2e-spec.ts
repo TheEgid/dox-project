@@ -17,4 +17,20 @@ describe("Root [end-to-end]", () => {
         expect(response.body).toStrictEqual({ status: "OK" });
       });
   });
+
+  it("- GET api/.env", async () => {
+    return request(app.getHttpServer())
+      .get("/api/.env")
+      .then((response) => {
+        expect(response.status).toBe(HttpStatus.NOT_FOUND);
+      });
+  });
+
+  it("- GET .env", async () => {
+    return request(app.getHttpServer())
+      .get("/.env")
+      .then((response) => {
+        expect(response.status).toBe(HttpStatus.NOT_FOUND);
+      });
+  });
 });

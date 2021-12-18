@@ -1,4 +1,6 @@
 fleep==1.0.1
 pikepdf==4.1.0
-pdf2docx==0.5.2
 docx==0.2.4
+
+# Python 3.9.9 not more!
+pdf2docx==0.5.2

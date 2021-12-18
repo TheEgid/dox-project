@@ -31,6 +31,7 @@ def file_processor(pdf_filepath):
             })
 
 
+# Python 3.9.9 not more!
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         document = " ".join(sys.argv[1:])
