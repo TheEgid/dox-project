@@ -1,10 +1,7 @@
-import User from "../user/user.entity";
-import Token from "../token/token.entity";
-import Document from "../document/document.entity";
+import { join } from "path";
 import * as dotenv from "dotenv";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import { ConnectionOptions } from "typeorm";
-import { Logger } from "@nestjs/common";
 
 dotenv.config({ path: ".env" });
 
@@ -15,9 +12,6 @@ const dbNames = {
 };
 
 process.env.DB_NAME = <string>dbNames[process.env.NODE_ENV];
-
-// ????
-Logger.log(`[Database] ⛏ ${process.env.DB_NAME} interaction`);
 
 const dbOptions = {
   test: {
@@ -47,7 +41,7 @@ const dbOptions = {
 };
 
 const dbCommonOptions: ConnectionOptions = {
-  entities: [User, Token, Document],
+  entities: [join(__dirname, "..", "/**/*.entity.{ts,js}")], //[User, Token, Document],
   type: "postgres",
   name: process.env.DB_NAME,
 };

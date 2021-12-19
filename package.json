@@ -7,17 +7,23 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "yarn prebuild && nest build",
     "start:dev": "set NODE_ENV=dev&&nest start --watch",
-    "start:debug": "nest start --debug --watch",
     "start:prod": "set NODE_ENV=prod&&node dist/main",
+    "start:debug": "nest start --debug --watch",
     "fmt": "eslint **/*.ts --fix",
     "lint": "eslint **/*.ts --color",
     "test": "jest --detectOpenHandles --verbose",
     "test:watch": "test jest --watch",
     "test:cov": "test jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "pretypeorm": "ts-node -r tsconfig-paths/register src/database/fixconfig.ts",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ormconfig.json",
+    "migration:generate": "set NODE_ENV=dev&&yarn typeorm migration:generate -n NEW",
+    "migration_dev": "set NODE_ENV=dev&&yarn typeorm migration:run",
+    "migration_test": "set NODE_ENV=test&&yarn typeorm migration:run",
+    "migration_prod": "set NODE_ENV=prod&&yarn typeorm migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^8.2.3",

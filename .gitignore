@@ -148,3 +148,4 @@ MANIFEST
 
 *.rar
 /test/testFiles/sampleBig.pdf
+/ormconfig.json
