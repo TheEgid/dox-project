@@ -1,8 +1,7 @@
 import { getConnection } from "typeorm";
 import { Test } from "@nestjs/testing";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import dbConnectionOptions from "../src/database/database.config";
 import AppModule from "../src/app.module";
+import DataBaseModule from "../src/database/database.module";
 
 export interface IErrorRequest {
   statusCode: number;
@@ -19,7 +18,7 @@ const databaseStringAccidentCheck = () => {
 
 const createModuleFixture = async () => {
   const workTestingModule = await Test.createTestingModule({
-    imports: [TypeOrmModule.forRoot(dbConnectionOptions), AppModule],
+    imports: [DataBaseModule, AppModule],
   }).compile();
   databaseStringAccidentCheck();
   return workTestingModule;
