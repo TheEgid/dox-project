@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import { ConnectionOptions } from "typeorm";
 
-dotenv.config({ path: ".env" });
+dotenv.config({ path: "../.env" });
 
 const dbNames = {
   test: process.env.DB_NAME_TEST,

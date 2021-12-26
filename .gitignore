@@ -143,9 +143,11 @@ share/python-wheels/
 MANIFEST
 
 
-/UPLOAD/*
-!/UPLOAD/.gitkeep
+/backend/UPLOAD/*
+!/backend/UPLOAD/.gitkeep
 
 *.rar
-/test/testFiles/sampleBig.pdf
-/ormconfig.json
+
+/backend/ormconfig.json
+/backend/UPLOAD/
+/backend/test/testFiles/sampleBig.pdf
