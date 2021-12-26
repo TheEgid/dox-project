@@ -40,6 +40,7 @@ const dbOptions = {
 const dbCommonOptions: ConnectionOptions = {
   entities: [join(__dirname, "..", "/**/*.entity.{ts,js}")], //[User, Token, Document],
   type: "postgres",
+  host: process.platform === "linux" ? "postgres" : "localhost",
   port: 5432,
   name: process.env.DB_NAME,
 };
