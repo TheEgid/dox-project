@@ -15,7 +15,6 @@ process.env.DB_NAME = <string>dbNames[process.env.NODE_ENV];
 
 const dbOptions = {
   test: {
-    port: 5432,
     username: process.env.DB_USER_TEST,
     password: process.env.DB_PASSWORD_TEST,
     database: process.env.DB_NAME_TEST,
@@ -23,7 +22,6 @@ const dbOptions = {
     logging: false,
   },
   dev: {
-    port: 5432,
     username: process.env.DB_USER_DEV,
     password: process.env.DB_PASSWORD_DEV,
     database: process.env.DB_NAME_DEV,
@@ -31,7 +29,6 @@ const dbOptions = {
     logging: true,
   },
   prod: {
-    port: 5432,
     username: process.env.DB_USER_PROD,
     password: process.env.DB_PASSWORD_PROD,
     database: process.env.DB_NAME_PROD,
@@ -43,6 +40,7 @@ const dbOptions = {
 const dbCommonOptions: ConnectionOptions = {
   entities: [join(__dirname, "..", "/**/*.entity.{ts,js}")], //[User, Token, Document],
   type: "postgres",
+  port: 5432,
   name: process.env.DB_NAME,
 };
 
