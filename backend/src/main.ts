@@ -5,9 +5,11 @@ import { Logger } from "@nestjs/common";
 
 const { NODE_ENV } = process.env;
 
-if (!NODE_ENV || !fs.existsSync("../.env")) {
+if (!NODE_ENV || !fs.existsSync(".env")) {
   throw new Error("NODE_ENV required");
 }
+
+console.log(NODE_ENV);
 
 const port = Number(process.env.SERVER_PORT);
 
