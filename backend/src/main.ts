@@ -9,8 +9,6 @@ if (!NODE_ENV || !fs.existsSync(".env")) {
   throw new Error("NODE_ENV required");
 }
 
-console.log(NODE_ENV);
-
 const port = Number(process.env.SERVER_PORT);
 
 async function bootstrap() {

@@ -9,6 +9,10 @@ describe("Root [end-to-end]", () => {
     app = await initializeBefore();
   });
 
+  test("!NODE_ENV is test", () => {
+    expect(process.env.NODE_ENV).toBe("test");
+  });
+
   it("+ GET status", async () => {
     return request(app.getHttpServer())
       .get("/api/status")

@@ -1,4 +1,13 @@
 
-## Description
 
-yarn
+http://192.168.1.71
+
+192.168.1.71
+
+http://192.168.1.71/
+
+
+http://192.168.1.71/api/status
+
+
+http://192.168.1.71/pgadmin
