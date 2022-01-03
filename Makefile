@@ -1,11 +1,10 @@
 include .env
 export
 
-LOCAL_DUMP_PATH=_BACKUP/my_backup.zip
+LOCAL_DUMP_PATH=_BACKUP/my_backup.sql
 
 
-all: build test migrate restore stop run
-#all: build run
+all: build run migrate restore
 
 
 build:
@@ -46,13 +45,13 @@ backup:
 	@echo "Backed up! `date +%F--%H-%M`";
 
 
+dockerclean:
+	docker system prune -f
+	docker system prune -f --volumes	
+
+
 #logs:
 #	sudo chmod 777 /opt;
 #	sudo docker-compose logs | tee | grep -E 'GET|POST' | grep -E 'nginx' | sed 's/^.\{,15\}//' > /opt/nginx_logs.csv;
 #	sleep 1;
 #	@echo 'sep=^' | cat - /opt/nginx_logs.csv > /opt/temp && mv /opt/temp /opt/nginx_logs.csv
-
-
-dockerclean:
-	docker system prune -f
-	docker system prune -f --volumes	
