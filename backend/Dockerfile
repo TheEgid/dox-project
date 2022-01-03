@@ -1,7 +1,4 @@
-# Build Stage 1
-# This build created a staging docker image
-
-FROM nikolaik/python-nodejs:python3.8-nodejs16-bullseye AS appbuild
+FROM nikolaik/python-nodejs:python3.9-nodejs16-bullseye
 
 WORKDIR /usr/src/app
 
@@ -24,21 +21,3 @@ RUN tsc
 RUN yarn build 
 
 CMD yarn start:prod
-
-# # Build Stage 2
-# # This build takes the production build from staging build
-#
-# FROM nikolaik/python-nodejs:python3.8-nodejs16-bullseye
-#
-# WORKDIR /usr/app
-#
-# COPY package.json ./
-# COPY yarn.lock ./
-#
-# COPY --from=appbuild /usr/app/dist ./dist
-#
-# EXPOSE 3000
-#
-# CMD yarn start:prod
-
-#CMD ["sh", "-c", "yarn typeorm migration:run && yarn start:prod"]

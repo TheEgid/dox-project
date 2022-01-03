@@ -1,12 +1,12 @@
-
 include .env
 export
 
-LOCAL_DUMP_PATH=my_backup.zip
+LOCAL_DUMP_PATH=_BACKUP/my_backup.zip
 
 
-all: build test migrate stop run
+all: build test migrate restore stop run
 #all: build run
+
 
 build:
 	@rm -f ./backend/.env
@@ -14,13 +14,16 @@ build:
 	@cat .env > ./backend/.env
 	@docker-compose build
 
+
 migrate:
 	@docker exec -i backend_container yarn migration_prod
+
 
 test:
 	@echo $(DB_NAME_TEST);
 	@docker-compose up -d
 	@docker exec -i backend_container yarn test:e2e
+
 
 run:
 	@echo $(DB_NAME_PROD);
@@ -28,18 +31,20 @@ run:
 	@docker-compose up -d
 	@docker ps
 
+
 stop:
 	@docker-compose down
 
 
+restore:
+	@cat $(LOCAL_DUMP_PATH) | docker exec -i full_db_postgres psql -U $(DB_USER_PROD) -d $(DB_NAME_PROD) < $(LOCAL_DUMP_PATH);
+	@echo "Restored! `date +%F--%H-%M`";
+
+
 backup:
-	@docker exec -i full_db_postgres bash pg_dump --username $(DB_USER_PROD) $(DB_NAME_PROD) | gzip > $(LOCAL_DUMP_PATH);
+	@sudo docker exec -i full_db_postgres pg_dump --data-only --username $(DB_USER_PROD) $(DB_NAME_PROD) > $(LOCAL_DUMP_PATH);
+	@echo "Backed up! `date +%F--%H-%M`";
 
-
-#restore--
-#psql -d database1 -f '/opt/my_backup.sql'
-
-#cat $(LOCAL_DUMP_PATH) | docker exec -i $(DB_CONTAINER) pg_restore -U $(DB_USER) -d $(DB_NAME);
 
 #logs:
 #	sudo chmod 777 /opt;
@@ -51,5 +56,3 @@ backup:
 dockerclean:
 	docker system prune -f
 	docker system prune -f --volumes	
-
-#sudo docker run --rm -it  dox-project_backend 

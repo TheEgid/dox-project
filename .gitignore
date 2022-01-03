@@ -112,8 +112,6 @@ ENV/
 env.bak/
 venv.bak/
 
-
-
 __pycache__/
 *.py[cod]
 *$py.class
@@ -142,12 +140,13 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-
 /backend/UPLOAD/*
 !/backend/UPLOAD/.gitkeep
+
+/_BACKUP*
+!/_BACKUP/.gitkeep
 
 *.rar
 
 /backend/ormconfig.json
-/backend/UPLOAD/
 /backend/test/testFiles/sampleBig.pdf
