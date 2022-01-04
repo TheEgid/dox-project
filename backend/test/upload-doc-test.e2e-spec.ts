@@ -45,28 +45,31 @@ describe("Upload PDF File [end-to-end]", () => {
 
     if (!fs.existsSync(filePath)) throw Error(`${filePath} not exists!`);
 
-    return request(app.getHttpServer())
-      .post("/api/upload/upload")
-      .attach("customfile", filePath)
-      .then(async (response) => {
-        expect(response.status).toBe(HttpStatus.CREATED);
-        expect(isInstanceOfSuccess(await response.body)).toBeTruthy();
+    return (
+      request(app.getHttpServer())
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        .post("/api/upload/upload")
+        .attach("customfile", filePath)
+        .then(async (response) => {
+          expect(response.status).toBe(HttpStatus.CREATED);
+          expect(isInstanceOfSuccess(await response.body)).toBeTruthy();
 
-        const jsonContent = <ISuccess>response.body;
+          const jsonContent = <ISuccess>response.body;
 
-        expect(jsonContent.docxPath.endsWith("docx")).toBeTruthy();
-        expect(jsonContent.fileContent.length !== 0).toBeTruthy();
-        expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
-        expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
+          expect(jsonContent.docxPath.endsWith("docx")).toBeTruthy();
+          expect(jsonContent.fileContent.length !== 0).toBeTruthy();
+          expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
+          expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
 
-        const createdDocument = await documentRepo.findOne({
-          order: { createdAt: "DESC" },
-        });
+          const createdDocument = await documentRepo.findOne({
+            order: { createdAt: "DESC" },
+          });
 
-        expect(createdDocument.userHiddenName).toEqual("anonymous");
-        expect(createdDocument.filename).toEqual("86e625c6.docx");
-        expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
-      });
+          expect(createdDocument.userHiddenName).toEqual("anonymous");
+          expect(createdDocument.filename).toEqual("86e625c6.docx");
+          expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
+        })
+    );
   });
 
   it("- POST upload (not .pdf document)", async () => {

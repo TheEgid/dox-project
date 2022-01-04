@@ -8,6 +8,7 @@
   "extends": [
     "eslint:recommended",
     "airbnb-typescript/base",
+    "plugin:sonarjs/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:prettier/recommended"
@@ -19,7 +20,7 @@
     "project": "./tsconfig.json"
   },
   "plugins": [
-    "@typescript-eslint/eslint-plugin", "import", "prettier"],
+    "@typescript-eslint/eslint-plugin", "import", "prettier", "sonarjs"],
   "rules": {
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",

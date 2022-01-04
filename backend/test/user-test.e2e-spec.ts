@@ -146,17 +146,20 @@ describe("User [end-to-end]", () => {
   });
 
   it("+ GET USER Info", async () => {
-    return request(app.getHttpServer())
-      .get("/api/auth/info")
-      .set("Authorization", `Bearer ${newToken}`)
-      .then(async (response) => {
-        expect(response.status).toBe(HttpStatus.OK);
-        expect(isInstanceOfUserDto(await response.body)).toBeTruthy();
-        const infoUser = <UserDto>response.body;
-        const valid = await argon2.verify(infoUser.hashedPassword, newUser.hashedPassword);
-        expect(valid).toBeTruthy();
-        expect(infoUser.isAdmin).toBeFalsy();
-      });
+    return (
+      request(app.getHttpServer())
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        .get("/api/auth/info")
+        .set("Authorization", `Bearer ${newToken}`)
+        .then(async (response) => {
+          expect(response.status).toBe(HttpStatus.OK);
+          expect(isInstanceOfUserDto(await response.body)).toBeTruthy();
+          const infoUser = <UserDto>response.body;
+          const valid = await argon2.verify(infoUser.hashedPassword, newUser.hashedPassword);
+          expect(valid).toBeTruthy();
+          expect(infoUser.isAdmin).toBeFalsy();
+        })
+    );
   });
 
   it("- GET USER Info (invalid token)", async () => {
@@ -167,6 +170,7 @@ describe("User [end-to-end]", () => {
         expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
         expect(isInstanceOfError(await response.body)).toBeTruthy();
         const errMsg = <IErrorRequest>response.body;
+        // eslint-disable-next-line sonarjs/no-duplicate-string
         expect(errMsg.message).toBe("Wrong headers.authorization");
       });
   });
@@ -227,27 +231,33 @@ describe("User [end-to-end]", () => {
   });
 
   it("- GET USER logout (repeated)", async () => {
-    return request(app.getHttpServer())
-      .get("/api/auth/logout")
-      .set("Authorization", `Bearer ${newToken}`)
-      .then(async (response) => {
-        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-        expect(isInstanceOfError(await response.body)).toBeTruthy();
-        const errMsg = <IErrorRequest>response.body;
-        expect(errMsg.message).toBe("Wrong headers.authorization");
-      });
+    return (
+      request(app.getHttpServer())
+        .get("/api/auth/logout")
+        .set("Authorization", `Bearer ${newToken}`)
+        // eslint-disable-next-line sonarjs/no-identical-functions
+        .then(async (response) => {
+          expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+          expect(isInstanceOfError(await response.body)).toBeTruthy();
+          const errMsg = <IErrorRequest>response.body;
+          expect(errMsg.message).toBe("Wrong headers.authorization");
+        })
+    );
   });
 
   it("- GET USER Info (already logout)", async () => {
-    return request(app.getHttpServer())
-      .get("/api/auth/info")
-      .set("Authorization", `Bearer ${newToken}`)
-      .then(async function (response) {
-        expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-        expect(isInstanceOfError(await response.body)).toBeTruthy();
-        const errMsg = <IErrorRequest>response.body;
-        expect(errMsg.message).toBe("Wrong headers.authorization");
-      });
+    return (
+      request(app.getHttpServer())
+        .get("/api/auth/info")
+        .set("Authorization", `Bearer ${newToken}`)
+        // eslint-disable-next-line sonarjs/no-identical-functions
+        .then(async (response) => {
+          expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+          expect(isInstanceOfError(await response.body)).toBeTruthy();
+          const errMsg = <IErrorRequest>response.body;
+          expect(errMsg.message).toBe("Wrong headers.authorization");
+        })
+    );
   });
 
   afterAll(async () => {

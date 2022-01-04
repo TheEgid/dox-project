@@ -68,6 +68,7 @@ describe("Document [end-to-end]", () => {
         expect(isInstanceOfDocumentDto(await response.body)).toBeFalsy();
         expect(isInstanceOfError(await response.body)).toBeTruthy();
         const errMsg = <IErrorRequest>response.body;
+        // eslint-disable-next-line sonarjs/no-duplicate-string
         expect(errMsg.message).toBe("NOT_FOUND Error");
       });
   });
@@ -79,7 +80,7 @@ describe("Document [end-to-end]", () => {
         expect(response.status).toBe(HttpStatus.OK);
         expect(await response.body).toBeInstanceOf(Array);
         const docs = <DocumentDto[]>response.body;
-        docs.map((doc) => expect(isInstanceOfDocumentDto(doc)).toBeTruthy());
+        docs.forEach((doc) => expect(isInstanceOfDocumentDto(doc)).toBeTruthy());
       });
   });
 
@@ -98,16 +99,19 @@ describe("Document [end-to-end]", () => {
   });
 
   it("- PUT document/update:id", async () => {
-    return request(app.getHttpServer())
-      .put(`/api/document/update/${documentId * 200}`)
-      .send(docUpdated)
-      .then(async (response) => {
-        expect(response.status).toBe(HttpStatus.NOT_FOUND);
-        expect(isInstanceOfDocumentDto(await response.body)).toBeFalsy();
-        expect(isInstanceOfError(await response.body)).toBeTruthy();
-        const errMsg = <IErrorRequest>response.body;
-        expect(errMsg.message).toBe("NOT_FOUND Error");
-      });
+    return (
+      request(app.getHttpServer())
+        .put(`/api/document/update/${documentId * 200}`)
+        .send(docUpdated)
+        // eslint-disable-next-line sonarjs/no-identical-functions
+        .then(async (response) => {
+          expect(response.status).toBe(HttpStatus.NOT_FOUND);
+          expect(isInstanceOfDocumentDto(await response.body)).toBeFalsy();
+          expect(isInstanceOfError(await response.body)).toBeTruthy();
+          const errMsg = <IErrorRequest>response.body;
+          expect(errMsg.message).toBe("NOT_FOUND Error");
+        })
+    );
   });
 
   it("+ DELETE document/delete:id", async () => {
