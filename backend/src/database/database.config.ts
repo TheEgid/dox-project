@@ -45,9 +45,9 @@ const dbCommonOptions: ConnectionOptions = {
     name: process.env.DB_NAME,
 };
 
-const dbConnectionOptions = Object.assign(
-    dbCommonOptions,
-    dbOptions[process.env.NODE_ENV]
-) as PostgresConnectionOptions;
+const dbConnectionOptions = <PostgresConnectionOptions>{
+    ...dbCommonOptions,
+    ...dbOptions[process.env.NODE_ENV],
+};
 
 export default dbConnectionOptions;
