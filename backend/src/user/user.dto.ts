@@ -1,17 +1,17 @@
 import Token from "../token/token.entity";
 
 export default class UserDto {
-  readonly id: string;
+    readonly id: string;
 
-  readonly email: string;
+    readonly email: string;
 
-  hashedPassword: string;
+    hashedPassword: string;
 
-  readonly createdAt: Date;
+    readonly createdAt: Date;
 
-  readonly isActive: boolean;
+    readonly isActive: boolean;
 
-  readonly isAdmin: boolean;
+    readonly isAdmin: boolean;
 
-  readonly token: Token;
+    readonly token: Token;
 }

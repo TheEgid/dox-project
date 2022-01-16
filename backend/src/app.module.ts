@@ -12,16 +12,23 @@ import DocumentModule from "./document/document.module";
 import UploadDocModule from "./uploadDoc/uploadDoc.module";
 
 @Module({
-  imports: [UploadDocModule, DataBaseModule, UserModule, TokenModule, AdminModule, DocumentModule],
-  controllers: [AppController],
-  providers: [AppService, { provide: APP_INTERCEPTOR, useClass: NotFoundInterceptor }],
+    imports: [
+        UploadDocModule,
+        DataBaseModule,
+        UserModule,
+        TokenModule,
+        AdminModule,
+        DocumentModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService, { provide: APP_INTERCEPTOR, useClass: NotFoundInterceptor }],
 })
 export default class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AppLoggerMiddleware)
-      .forRoutes("*")
-      .apply(HealthcheckMiddleware)
-      .forRoutes({ path: "status", method: RequestMethod.GET });
-  }
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(AppLoggerMiddleware)
+            .forRoutes("*")
+            .apply(HealthcheckMiddleware)
+            .forRoutes({ path: "status", method: RequestMethod.GET });
+    }
 }

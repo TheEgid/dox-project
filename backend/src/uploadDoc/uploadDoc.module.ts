@@ -12,14 +12,14 @@ import Document from "../document/document.entity";
 import DocumentService from "../document/document.service";
 
 @Module({
-  imports: [
-    MulterModule.registerAsync({
-      useFactory: () => getUploadFilesConfig(),
-    }),
-    TypeOrmModule.forFeature([User, Token, Document]),
-  ],
-  exports: [UploadDocService],
-  providers: [UserService, TokenService, DocumentService, UploadDocService],
-  controllers: [UploadDocController],
+    imports: [
+        MulterModule.registerAsync({
+            useFactory: () => getUploadFilesConfig(),
+        }),
+        TypeOrmModule.forFeature([User, Token, Document]),
+    ],
+    exports: [UploadDocService],
+    providers: [UserService, TokenService, DocumentService, UploadDocService],
+    controllers: [UploadDocController],
 })
 export default class UploadDocModule {}

@@ -10,16 +10,16 @@ import User from "../user/user.entity";
 import Token from "../token/token.entity";
 
 @Module({
-  imports: [UserModule, TokenModule, TypeOrmModule.forFeature([User, Token])],
-  controllers: [AdminController],
-  providers: [AdminService],
+    imports: [UserModule, TokenModule, TypeOrmModule.forFeature([User, Token])],
+    controllers: [AdminController],
+    providers: [AdminService],
 })
 export default class AdminModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AdminMiddleware)
-      .forRoutes(AdminController)
-      .apply(AuthMiddleware)
-      .forRoutes(AdminController);
-  }
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(AdminMiddleware)
+            .forRoutes(AdminController)
+            .apply(AuthMiddleware)
+            .forRoutes(AdminController);
+    }
 }

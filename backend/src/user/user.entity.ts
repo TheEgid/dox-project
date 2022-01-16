@@ -5,29 +5,29 @@ import UserDto from "./user.dto";
 
 @Entity()
 export default class User extends UserDto {
-  @PrimaryGeneratedColumn("uuid")
-  readonly id: string;
+    @PrimaryGeneratedColumn("uuid")
+    readonly id: string;
 
-  @IsEmail()
-  @Column({
-    length: 160,
-    unique: true,
-  })
-  email: string;
+    @IsEmail()
+    @Column({
+        length: 160,
+        unique: true,
+    })
+    email: string;
 
-  @Column("text")
-  @MinLength(6)
-  hashedPassword: string;
+    @Column("text")
+    @MinLength(6)
+    hashedPassword: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+    @CreateDateColumn()
+    createdAt: Date;
 
-  @Column({ default: true })
-  isActive: boolean;
+    @Column({ default: true })
+    isActive: boolean;
 
-  @Column({ default: false })
-  isAdmin: boolean;
+    @Column({ default: false })
+    isAdmin: boolean;
 
-  @OneToMany(() => Token, (token) => token.userId)
-  token: Token;
+    @OneToMany(() => Token, (token) => token.userId)
+    token: Token;
 }

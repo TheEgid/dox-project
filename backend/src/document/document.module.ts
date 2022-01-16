@@ -5,9 +5,9 @@ import DocumentController from "./document.controller";
 import DocumentService from "./document.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Document])],
-  exports: [DocumentService],
-  controllers: [DocumentController],
-  providers: [DocumentService],
+    imports: [TypeOrmModule.forFeature([Document])],
+    exports: [DocumentService],
+    controllers: [DocumentController],
+    providers: [DocumentService],
 })
 export default class DocumentModule {}

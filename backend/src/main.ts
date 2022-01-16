@@ -6,24 +6,24 @@ import { Logger } from "@nestjs/common";
 const { NODE_ENV } = process.env;
 
 if (!NODE_ENV || !fs.existsSync(".env")) {
-  throw new Error("NODE_ENV required");
+    throw new Error("NODE_ENV required");
 }
 
 const port = Number(process.env.SERVER_PORT);
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix("api");
-  await app.listen(port);
+    const app = await NestFactory.create(AppModule);
+    app.setGlobalPrefix("api");
+    await app.listen(port);
 }
 
 bootstrap()
-  .then(() => {
-    Logger.log(`[Info] ➤ port:${port} ⚙ ${String(process.env.NODE_ENV)} ⚙ environment`);
-  })
-  .catch((error) => {
-    Logger.error("[Error] ➤ ".concat(error as string));
-  });
+    .then(() => {
+        Logger.log(`[Info] ➤ port:${port} ⚙ ${String(process.env.NODE_ENV)} ⚙ environment`);
+    })
+    .catch((error) => {
+        Logger.error("[Error] ➤ ".concat(error as string));
+    });
 
 // @Get("/")
 // // Протестировано добавление заголовков

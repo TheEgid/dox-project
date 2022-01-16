@@ -6,30 +6,30 @@ import Document from "./document.entity";
 
 @Injectable()
 export default class DocumentService {
-  constructor(
-    @InjectRepository(Document)
-    private documentRepository: Repository<Document>
-  ) {}
+    constructor(
+        @InjectRepository(Document)
+        private documentRepository: Repository<Document>
+    ) {}
 
-  async getAllDocument() {
-    return this.documentRepository.find();
-  }
+    async getAllDocument() {
+        return this.documentRepository.find();
+    }
 
-  async getDocumentById(id: number) {
-    return this.documentRepository.findOne(id);
-  }
+    async getDocumentById(id: number) {
+        return this.documentRepository.findOne(id);
+    }
 
-  async createDocument(createDocumentDto: DocumentDto) {
-    return this.documentRepository.save(createDocumentDto);
-  }
+    async createDocument(createDocumentDto: DocumentDto) {
+        return this.documentRepository.save(createDocumentDto);
+    }
 
-  async updateDocument(updateDocumentDto: UpdateDocumentDto) {
-    const id = updateDocumentDto.id;
-    await this.documentRepository.update(id, updateDocumentDto);
-    return this.documentRepository.findOne(id);
-  }
+    async updateDocument(updateDocumentDto: UpdateDocumentDto) {
+        const id = updateDocumentDto.id;
+        await this.documentRepository.update(id, updateDocumentDto);
+        return this.documentRepository.findOne(id);
+    }
 
-  async deleteDocument(id: number) {
-    await this.documentRepository.delete(id);
-  }
+    async deleteDocument(id: number) {
+        await this.documentRepository.delete(id);
+    }
 }

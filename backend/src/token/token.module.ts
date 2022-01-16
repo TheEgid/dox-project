@@ -4,8 +4,8 @@ import Token from "./token.entity";
 import TokenService from "./token.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Token])],
-  exports: [TokenService],
-  providers: [TokenService],
+    imports: [TypeOrmModule.forFeature([Token])],
+    exports: [TokenService],
+    providers: [TokenService],
 })
 export default class TokenModule {}

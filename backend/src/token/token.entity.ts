@@ -4,19 +4,19 @@ import TokenDto from "./token.dto";
 
 @Entity()
 export default class Token extends TokenDto {
-  @PrimaryGeneratedColumn("uuid")
-  readonly id: string;
+    @PrimaryGeneratedColumn("uuid")
+    readonly id: string;
 
-  @Column()
-  accessToken: string;
+    @Column()
+    accessToken: string;
 
-  @Column({ nullable: true })
-  refreshToken: string;
+    @Column({ nullable: true })
+    refreshToken: string;
 
-  @Column({ type: "timestamp" })
-  expiresIn: string;
+    @Column({ type: "timestamp" })
+    expiresIn: string;
 
-  @JoinColumn({ name: "userId" })
-  @ManyToOne(() => User, (user) => user.token, { cascade: true, onDelete: "CASCADE" })
-  userId: User;
+    @JoinColumn({ name: "userId" })
+    @ManyToOne(() => User, (user) => user.token, { cascade: true, onDelete: "CASCADE" })
+    userId: User;
 }
