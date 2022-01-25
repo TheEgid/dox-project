@@ -36,6 +36,7 @@
     "follow-redirects": "^1.14.7",
     "hash-sum": "^2.0.0",
     "multer": "^1.4.4",
+    "node-fetch": "^3.2.0",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
