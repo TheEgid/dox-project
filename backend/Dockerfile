@@ -5,11 +5,14 @@ WORKDIR /usr/src/app
 COPY ./py_child ./py_child
 RUN pip install -r py_child/requirements.txt
 
-COPY . .
+RUN yarn global add @nestjs/cli rimraf cross-env jest typescript ts-node typeorm
+
+COPY package.json ./
+COPY yarn.lock ./
 
 RUN yarn install --ignore-engines
 
-RUN yarn global add @nestjs/cli rimraf cross-env jest typescript ts-node typeorm
+COPY ./ ./
 
 RUN tsc
 RUN yarn build 

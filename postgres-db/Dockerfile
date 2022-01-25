@@ -1,9 +1,9 @@
 FROM postgres:latest
 
-COPY ./docker-entrypoint.sh /usr/local/bin/
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
-ENTRYPOINT ["./usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 CMD ["postgres"]
