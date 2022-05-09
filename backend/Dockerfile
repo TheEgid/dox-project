@@ -1,4 +1,4 @@
-FROM nikolaik/python-nodejs:python3.9-nodejs16-bullseye
+FROM nikolaik/python-nodejs:python3.10-nodejs16-bullseye
 
 WORKDIR /usr/src/app
 
