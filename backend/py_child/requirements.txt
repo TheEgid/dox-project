@@ -1,5 +1,5 @@
 fleep==1.0.1
-pikepdf==4.3.1
+pikepdf==5.1.0
 docx==0.2.4
 
-pdf2docx==0.5.3
+pdf2docx==0.5.4

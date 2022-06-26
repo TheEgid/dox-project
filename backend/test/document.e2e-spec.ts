@@ -3,7 +3,7 @@ import { DocumentDto, UpdateDocumentDto } from "../src/document/document.dto";
 import { HttpStatus, INestApplication } from "@nestjs/common";
 import { finalizeAfter, IErrorRequest, initializeBefore } from "./fixture.common";
 import request from "supertest";
-import { getConnection, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 
 const docObject: DocumentDto = {
     userHiddenName: "test",
@@ -25,11 +25,14 @@ const isInstanceOfError = (object: any): object is IErrorRequest => "error" in o
 describe("Document [end-to-end]", () => {
     let app: INestApplication;
     let documentRepo: Repository<Document>;
+    let appDataSource: DataSource;
     let documentId: number;
 
     beforeAll(async () => {
         app = await initializeBefore();
-        documentRepo = getConnection(process.env.DB_NAME).getRepository(Document);
+        await app.init();
+        appDataSource = app.get(DataSource);
+        documentRepo = appDataSource.getRepository(Document);
     });
 
     it("+ POST document/create", async () => {
@@ -41,11 +44,12 @@ describe("Document [end-to-end]", () => {
                 expect(isInstanceOfDocumentDto(await response.body)).toBeTruthy();
                 const jsonContent = <UpdateDocumentDto>response.body;
                 expect(jsonContent.filename).toBe(docObject.filename);
-                const createdDocument = await documentRepo.findOne({
+                const createdDocument = await documentRepo.find({
                     order: { createdAt: "DESC" },
+                    take: 1,
                 });
-                expect(createdDocument.filename).toBe(docObject.filename);
-                documentId = createdDocument.id;
+                expect(createdDocument[0].filename).toBe(docObject.filename);
+                documentId = createdDocument[0].id;
             });
     });
 
@@ -123,7 +127,7 @@ describe("Document [end-to-end]", () => {
                 const deletedDocument = await documentRepo.findOne({
                     where: { id: documentId },
                 });
-                expect(deletedDocument).toBeUndefined();
+                expect(deletedDocument).toBeNull();
             });
     });
 
@@ -140,5 +144,6 @@ describe("Document [end-to-end]", () => {
 
     afterAll(async () => {
         await finalizeAfter("Document");
+        // await app.close();
     });
 });

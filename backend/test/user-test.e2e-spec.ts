@@ -1,5 +1,5 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { getConnection, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { UUIDv4 as uuid } from "uuid-v4-validator";
 import request from "supertest";
 import path from "path";
@@ -34,15 +34,18 @@ const dayAgo = new Date(new Date().getTime() - 86400000).toISOString(); // - day
 
 describe("User [end-to-end]", () => {
     let app: INestApplication;
+    let appDataSource: DataSource;
     let tokenRepo: Repository<Token>;
     let userRepo: Repository<User>;
     let documentRepo: Repository<Document>;
 
     beforeAll(async () => {
         app = await initializeBefore();
-        tokenRepo = getConnection(process.env.DB_NAME).getRepository(Token);
-        userRepo = getConnection(process.env.DB_NAME).getRepository(User);
-        documentRepo = getConnection(process.env.DB_NAME).getRepository(Document);
+        await app.init();
+        appDataSource = app.get(DataSource);
+        tokenRepo = appDataSource.getRepository(Token);
+        userRepo = appDataSource.getRepository(User);
+        documentRepo = appDataSource.getRepository(Document);
     });
 
     // register
@@ -104,14 +107,15 @@ describe("User [end-to-end]", () => {
                 expect(jsonContent.fileContent.length !== 0).toBeTruthy();
                 expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
                 expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
-
-                const createdDocument = await documentRepo.findOne({
+                const createdDocument = await documentRepo.find({
                     order: { createdAt: "DESC" },
+                    take: 1,
                 });
-
-                expect(createdDocument.userHiddenName).toEqual("mo***********@m************.***");
-                expect(createdDocument.filename).toEqual("86e625c6.docx");
-                expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
+                expect(createdDocument[0].userHiddenName).toEqual(
+                    "mo***********@m************.***"
+                );
+                expect(createdDocument[0].filename).toEqual("86e625c6.docx");
+                expect(createdDocument[0].content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
             });
     });
 
@@ -125,6 +129,7 @@ describe("User [end-to-end]", () => {
             .set("Authorization", `Bearer ${fakeToken}`)
             .attach("customfile", filePath)
             .then(async (response) => {
+                // console.log(response.status);
                 expect(response.status).toBe(HttpStatus.CREATED);
                 expect(isInstanceOfSuccess(await response.body)).toBeTruthy();
 
@@ -134,14 +139,13 @@ describe("User [end-to-end]", () => {
                 expect(jsonContent.fileContent.length !== 0).toBeTruthy();
                 expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
                 expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
-
-                const createdDocument = await documentRepo.findOne({
+                const createdDocument = await documentRepo.find({
                     order: { createdAt: "DESC" },
+                    take: 1,
                 });
-
-                expect(createdDocument.userHiddenName).toEqual("anonymous");
-                expect(createdDocument.filename).toEqual("86e625c6.docx");
-                expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
+                expect(createdDocument[0].userHiddenName).toEqual("anonymous");
+                expect(createdDocument[0].filename).toEqual("86e625c6.docx");
+                expect(createdDocument[0].content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
             });
     });
 
@@ -191,7 +195,6 @@ describe("User [end-to-end]", () => {
 
     it("+ GET USER Info (update token)", async () => {
         const tokenService = new TokenService(tokenRepo);
-
         const currentToken = await tokenRepo.findOne({
             where: { refreshToken: newToken },
         });
@@ -218,6 +221,7 @@ describe("User [end-to-end]", () => {
 
     it("+ GET USER logout (exit)", async () => {
         const delToken = await tokenRepo.findOne({ where: { refreshToken: newToken } });
+
         return request(app.getHttpServer())
             .get("/api/auth/logout")
             .set("Authorization", `Bearer ${newToken}`)

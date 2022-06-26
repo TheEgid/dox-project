@@ -1,5 +1,5 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { getConnection, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import request from "supertest";
 import argon2 from "argon2";
 import { finalizeAfter, initializeBefore } from "./fixture.common";
@@ -19,9 +19,14 @@ let newToken;
 
 describe("Admin [end-to-end]", () => {
     let app: INestApplication;
+    let appDataSource: DataSource;
+    let userRepo: Repository<User>;
 
     beforeAll(async () => {
         app = await initializeBefore();
+        await app.init();
+        appDataSource = app.get(DataSource);
+        userRepo = appDataSource.getRepository(User);
     });
 
     // register
@@ -34,10 +39,7 @@ describe("Admin [end-to-end]", () => {
                 expect(isInstanceOfTokenDto(await response.body)).toBeTruthy();
                 const jsonContent = <TokenDto>response.body;
                 newToken = jsonContent.refreshToken;
-                const repository: Repository<User> = getConnection(
-                    process.env.DB_NAME
-                ).getRepository(User);
-                await repository.query(
+                await userRepo.query(
                     `UPDATE public."user" SET "isAdmin"='true' WHERE "email"='${newAdmin.email}'`
                 );
             });

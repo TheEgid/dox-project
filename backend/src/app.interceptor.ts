@@ -15,7 +15,7 @@ export default class NotFoundInterceptor implements NestInterceptor {
         {
             return next.handle().pipe(
                 tap((data) => {
-                    if (data === undefined) {
+                    if (data === undefined || data === null) {
                         throw new HttpException(
                             {
                                 statusCode: HttpStatus.NOT_FOUND,

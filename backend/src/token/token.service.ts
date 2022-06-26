@@ -51,7 +51,7 @@ export default class TokenService {
                 userId: user,
             };
             await this.tokenRepository.save(tokenDto);
-            return await this.tokenRepository.findOne(tokenDto.id);
+            return await this.tokenRepository.findOneByOrFail({ id: tokenDto.id });
         } catch (error) {
             return undefined;
         }

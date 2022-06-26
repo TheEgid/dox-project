@@ -27,7 +27,7 @@
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.2.5",
     "@nestjs/platform-express": "^8.2.5",
-    "@nestjs/typeorm": "^8.0.2",
+    "@nestjs/typeorm": "^8.1.4",
     "@network-utils/tcp-ping": "^1.2.1",
     "argon2": "^0.28.3",
     "class-validator": "^0.13.2",
@@ -42,7 +42,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.4.0",
     "shelljs": "^0.8.5",
-    "typeorm": "^0.2.41",
+    "typeorm": "^0.3.6",
     "uuid-v4-validator": "^2.0.0",
     "validator": "^13.7.0"
   },

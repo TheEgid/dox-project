@@ -6,7 +6,8 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "detectOpenHandles": true,
+  "detectOpenHandles": false,
   "verbose": true,
-  "setupFiles": ["dotenv/config"]
+  "setupFiles": ["dotenv/config"],
+  "testTimeout": 70000
 }

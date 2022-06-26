@@ -36,6 +36,6 @@ export default class AdminService {
         if (!UUIDv4.validate(id)) {
             return undefined;
         }
-        return this.userRepository.findOne(id);
+        return this.userRepository.findOneBy({ id: id });
     }
 }

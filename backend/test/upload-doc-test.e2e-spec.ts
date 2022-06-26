@@ -3,7 +3,7 @@ import { IErrorRequest, initializeBefore } from "./fixture.common";
 import * as fs from "fs";
 import path from "path";
 import request from "supertest";
-import { getConnection, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import Document from "../src/document/document.entity";
 
 interface ISuccess {
@@ -34,10 +34,13 @@ const isInstanceOfError = (object: any): object is IErrorRequest => "error" in o
 describe("Upload PDF File [end-to-end]", () => {
     let app: INestApplication;
     let documentRepo: Repository<Document>;
+    let appDataSource: DataSource;
 
     beforeAll(async () => {
         app = await initializeBefore();
-        documentRepo = getConnection(process.env.DB_NAME).getRepository(Document);
+        await app.init();
+        appDataSource = app.get(DataSource);
+        documentRepo = appDataSource.getRepository(Document);
     });
 
     it("+ POST upload", async () => {
@@ -61,13 +64,13 @@ describe("Upload PDF File [end-to-end]", () => {
                     expect(fs.existsSync(jsonContent.docxPath)).toBeTruthy();
                     expect(jsonContent.docxPath.indexOf("86e625c6") > 0).toBeTruthy();
 
-                    const createdDocument = await documentRepo.findOne({
+                    const createdDocument = await documentRepo.find({
                         order: { createdAt: "DESC" },
+                        take: 1,
                     });
-
-                    expect(createdDocument.userHiddenName).toEqual("anonymous");
-                    expect(createdDocument.filename).toEqual("86e625c6.docx");
-                    expect(createdDocument.content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
+                    expect(createdDocument[0].userHiddenName).toEqual("anonymous");
+                    expect(createdDocument[0].filename).toEqual("86e625c6.docx");
+                    expect(createdDocument[0].content.indexOf("АРБИТРАЖНЫЙ СУД") > 0).toBeTruthy();
                 })
         );
     });

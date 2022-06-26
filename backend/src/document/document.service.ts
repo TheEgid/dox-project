@@ -16,7 +16,7 @@ export default class DocumentService {
     }
 
     async getDocumentById(id: number) {
-        return this.documentRepository.findOne(id);
+        return this.documentRepository.findOneBy({ id: id });
     }
 
     async createDocument(createDocumentDto: DocumentDto) {
@@ -26,7 +26,7 @@ export default class DocumentService {
     async updateDocument(updateDocumentDto: UpdateDocumentDto) {
         const id = updateDocumentDto.id;
         await this.documentRepository.update(id, updateDocumentDto);
-        return this.documentRepository.findOne(id);
+        return this.documentRepository.findOneBy({ id: id });
     }
 
     async deleteDocument(id: number) {

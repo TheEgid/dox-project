@@ -24,7 +24,7 @@ export default class DocumentController {
     @Put("update/:id")
     async updateDocument(@Param("id") id: number, @Body() documentDto: DocumentDto) {
         const updatedDocument = await this.documentService.getDocumentById(id);
-        if (updatedDocument === undefined) {
+        if (updatedDocument === undefined || updatedDocument === null) {
             return undefined;
         }
         const updateDocumentDto = Object.assign(
@@ -36,8 +36,8 @@ export default class DocumentController {
 
     @Delete("delete/:id")
     async deleteDocument(@Param("id") id: number): Promise<{ deletedId: number }> {
-        const checkDocument = await this.documentService.getDocumentById(id);
-        if (checkDocument === undefined) {
+        const checkedDocument = await this.documentService.getDocumentById(id);
+        if (checkedDocument === undefined || checkedDocument === null) {
             return undefined;
         }
         await this.documentService.deleteDocument(id);
