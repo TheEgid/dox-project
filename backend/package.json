@@ -15,11 +15,11 @@
     "test:admin": "cross-env NODE_ENV=test&&jest --config ./test/jest-e2e.json --t admin",
     "test:user": "cross-env NODE_ENV=test&&jest --config ./test/jest-e2e.json --t user",
     "test:doc": "cross-env NODE_ENV=test&&jest --config ./test/jest-e2e.json --t doc",
-    "pretypeorm": "ts-node -r tsconfig-paths/register src/database/fixconfig.ts",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ormconfig.json",
-    "migration:generate": "set NODE_ENV=dev&&yarn typeorm migration:generate -n NEW",
-    "migration_dev": "set NODE_ENV=dev&&yarn typeorm migration:run",
-    "migration_prod": "export NODE_ENV=prod && yarn typeorm migration:run"
+    "typeorm": "typeorm-ts-node-esm -d ./src/database/migration.helper.ts",
+    "migration:generate": "set NODE_ENV=dev&& yarn run typeorm migration:generate ./src/database/migrations/$npm_config_name",
+    "migration:show": "set NODE_ENV=dev&& yarn run typeorm migration:show",
+    "migration_dev": "set NODE_ENV=dev&&yarn run typeorm migration:run",
+    "migration_prod": "export NODE_ENV=prod && yarn run typeorm migration:run"
   },
   "dependencies": {
     "@nestjs/common": "^8.3.1",
@@ -76,6 +76,8 @@
     "supertest": "^6.2.1",
     "ts-jest": "^28.0.5",
     "ts-loader": "^9.3.1",
+    "ts-node": "^10.8.1",
+    "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^3.12.0",
     "typescript": "^4.6.4",
     "webpack": "^5.72.0"
