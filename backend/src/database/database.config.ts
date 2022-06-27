@@ -1,4 +1,4 @@
-import { join } from "path";
+import path from "path";
 import * as dotenv from "dotenv";
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import { DataSourceOptions } from "typeorm";
@@ -38,11 +38,12 @@ const dbOptions = {
 };
 
 const dbCommonOptions: DataSourceOptions = {
-    entities: [join(__dirname, "..", "/**/*.entity.{ts,js}")], //[User, Token, Document],
+    entities: [path.join(__dirname, "..", "/**/*.entity.{ts,js}")], //[User, Token, Document],
     type: "postgres",
     host: process.platform === "linux" ? "postgres" : "localhost",
     port: 5432,
     name: process.env.DB_NAME,
+    migrations: [path.join(__dirname, "..", "database", "migrations") + path.sep + "*.ts"],
 };
 
 const dbConnectionOptions = <PostgresConnectionOptions>{
