@@ -21,8 +21,9 @@ migrate:
 test:
 	@echo $(DB_NAME_TEST);
 	@docker-compose up -d
-	@docker exec -i backend_container yarn test:e2e
-
+	@docker exec -i backend_container yarn test:user
+	@docker exec -i backend_container yarn test:admin
+	@docker exec -i backend_container yarn test:doc
 
 run:
 	@echo $(DB_NAME_PROD);

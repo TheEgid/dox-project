@@ -195,27 +195,23 @@ describe("User [end-to-end]", () => {
 
     it("+ GET USER Info (update token)", async () => {
         const tokenService = new TokenService(tokenRepo);
-        const currentToken = await tokenRepo.findOne({
-            where: { refreshToken: newToken },
-        });
+        const currentToken = await tokenRepo.findBy({ refreshToken: newToken });
         await tokenRepo.query(
-            `UPDATE public."token" SET "expiresIn"='${dayAgo}' WHERE "id"='${currentToken.id}'`
+            `UPDATE public."token" SET "expiresIn"='${dayAgo}' WHERE "id"='${currentToken[0].id}'`
         );
-        const expiredToken = await tokenRepo.findOne({
-            where: { id: currentToken.id },
-        });
+        const expiredToken = await tokenRepo.findBy({ refreshToken: newToken });
 
         return request(app.getHttpServer())
             .get("/api/auth/info")
-            .set("Authorization", `Bearer ${expiredToken.refreshToken}`)
+            .set("Authorization", `Bearer ${expiredToken[0].refreshToken}`)
             .then(async function (response) {
                 expect(response.status).toBe(HttpStatus.OK);
                 expect(isInstanceOfUserDto(await response.body)).toBeTruthy();
                 const actualToken = await tokenService.getTokenByUser(<User>response.body);
-                expect(actualToken.id).not.toEqual(expiredToken.id);
-                expect(actualToken.accessToken).toEqual(expiredToken.accessToken);
-                expect(actualToken.refreshToken).not.toEqual(expiredToken.refreshToken);
-                expect(actualToken.expiresIn > expiredToken.expiresIn).toBeTruthy();
+                expect(actualToken.id).not.toEqual(expiredToken[0].id);
+                expect(actualToken.accessToken).toEqual(expiredToken[0].accessToken);
+                expect(actualToken.refreshToken).not.toEqual(expiredToken[0].refreshToken);
+                expect(actualToken.expiresIn > expiredToken[0].expiresIn).toBeTruthy();
             });
     });
 
