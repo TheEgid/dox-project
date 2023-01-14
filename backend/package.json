@@ -30,7 +30,7 @@
     "@nestjs/typeorm": "^8.1.4",
     "@network-utils/tcp-ping": "^1.2.1",
     "argon2": "^0.28.5",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "dicer": "^0.3.1",
     "dotenv": "^14.3.0",
     "express": "^4.17.2",
